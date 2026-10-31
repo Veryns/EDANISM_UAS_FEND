@@ -372,7 +372,7 @@ p{margin:0 0 8px;}
 
 .accordion-item{
   background:var(--white);
-  border:0;                    /* hapus garis pemisah lama */
+  border:0;
   border-radius:var(--radius-md);
   box-shadow:0 4px 14px rgba(18,51,40,.08);
   overflow:hidden;
@@ -394,7 +394,7 @@ p{margin:0 0 8px;}
 }
 .accordion-item.open .accordion-trigger::after{content:"–";}
 
-/* animasi expand: grid 0fr -> 1fr mengikuti tinggi isi yang sebenarnya */
+/* animasi expand*/
 .accordion-panel{
   display:grid;
   grid-template-rows:0fr;

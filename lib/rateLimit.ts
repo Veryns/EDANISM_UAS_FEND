@@ -22,7 +22,6 @@ export function rlHit(req: NextRequest, name: string, windowMs: number) {
   else e.count++;
 }
 
-// true = boleh lanjut
 export function checkRateLimit(req: NextRequest, name: string, max: number, windowMs: number) {
   if (rlBlocked(req, name, max)) return false;
   rlHit(req, name, windowMs);

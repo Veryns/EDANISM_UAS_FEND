@@ -34,7 +34,6 @@ export async function handleUpload(req: NextRequest, prefix: string) {
     return NextResponse.json({ url: blob.url });
   }
 
-  // fallback lokal (development)
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
