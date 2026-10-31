@@ -16,7 +16,7 @@ export default function Navbar({
           <Link href="/#menu">Menu</Link>
           <Link href="/#tentang">About</Link>
           <Link href="/#faq">FAQ</Link>
-          {/* halaman ini masih HTML statis, jadi pakai <a> sampai dikonversi */}
+          {}
           {user && <a href="/wishlist.html">List Aku</a>}
           <Link href="/#kontak">Contact</Link>
         </nav>

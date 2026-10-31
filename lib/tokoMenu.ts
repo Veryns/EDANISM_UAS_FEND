@@ -9,7 +9,6 @@ export function cleanMenuBody(body: any) {
   };
 }
 
-// undefined = tidak diubah, null = tidak valid
 export function readMenuImages(body: any): string[] | null | undefined {
   const { images, image_url } = body || {};
   let list: any[];
