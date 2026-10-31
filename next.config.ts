@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/admin": ["./private/**/*"],
     "/admin/login": ["./private/**/*"],
+    "/admin/route": ["./private/**/*"],
+    "/admin/login/route": ["./private/**/*"],
   },
 };
 
