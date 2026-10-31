@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { readSession } from "@/lib/session";
+import { jsonBody } from "@/lib/serialize";
 
 export async function POST(req: NextRequest) {
-  const s = readSession(req);
+  const s = await readSession(req);
   if (!s.userId) {
     return NextResponse.json({ error: "Kamu harus login dulu untuk menulis ulasan." }, { status: 401 });
   }
 
-  const { ulasan, stars, target_type, target_id }: any = (await req.json().catch(() => ({}))) || {};
+  const { ulasan, stars, target_type, target_id } = await jsonBody(req);
 
   if (!ulasan || !String(ulasan).trim()) {
     return NextResponse.json({ error: "Ulasan tidak boleh kosong." }, { status: 400 });
@@ -17,35 +18,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Pilih dulu toko atau menu yang mau kamu ulas." }, { status: 400 });
   }
 
-  const targetIdNum = Number(target_id);
-  if (!Number.isInteger(targetIdNum)) {
+  const targetId = Number(target_id);
+  if (!Number.isInteger(targetId)) {
     return NextResponse.json({ error: "Toko/menu yang dipilih tidak valid." }, { status: 400 });
   }
-  const targetRow = (
+  const target =
     target_type === "store"
-      ? db.prepare("SELECT id, nama FROM stores WHERE id = ?").get(targetIdNum)
-      : db.prepare("SELECT id, nama FROM menu_items WHERE id = ?").get(targetIdNum)
-  ) as { id: number; nama: string } | undefined;
-
-  if (!targetRow) {
+      ? await prisma.store.findUnique({ where: { id: targetId }, select: { id: true, nama: true } })
+      : await prisma.menuItem.findUnique({ where: { id: targetId }, select: { id: true, nama: true } });
+  if (!target) {
     return NextResponse.json({ error: "Toko/menu yang dipilih tidak ditemukan." }, { status: 400 });
   }
 
-  const starsNum = Number(stars);
-  const finalStars = Number.isInteger(starsNum) && starsNum >= 1 && starsNum <= 5 ? starsNum : 5;
+  const n = Number(stars);
+  const finalStars = Number.isInteger(n) && n >= 1 && n <= 5 ? n : 5;
 
-  db.prepare(
-    `INSERT INTO testimonials (nama, ulasan, waktu, stars, approved, sort_order, target_type, target_id, target_nama)
-     VALUES (?, ?, ?, ?, 0, 0, ?, ?, ?)`
-  ).run(
-    s.userNama || "Pengguna",
-    String(ulasan).trim(),
-    "Baru saja",
-    finalStars,
-    target_type,
-    targetRow.id,
-    targetRow.nama
-  );
+  await prisma.testimonial.create({
+    data: {
+      nama: s.userNama || "Pengguna",
+      ulasan: String(ulasan).trim(),
+      waktu: "Baru saja",
+      stars: finalStars,
+      approved: 0,
+      sort_order: 0,
+      target_type,
+      target_id: target.id,
+      target_nama: target.nama,
+    },
+  });
 
   return NextResponse.json(
     { ok: true, message: "Terima kasih! Ulasan kamu akan tampil setelah disetujui admin." },

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { put } from "@vercel/blob";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
-import { UPLOADS_DIR } from "@/lib/config";
 
 const EXT: Record<string, string> = {
   "image/jpeg": ".jpg",
@@ -28,7 +28,15 @@ export async function handleUpload(req: NextRequest, prefix: string) {
     return NextResponse.json({ error: "Ukuran file maksimal 3MB." }, { status: 400 });
   }
   const name = `${prefix}-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-  await mkdir(UPLOADS_DIR, { recursive: true });
-  await writeFile(path.join(UPLOADS_DIR, name), Buffer.from(await file.arrayBuffer()));
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(`uploads/${name}`, file, { access: "public" });
+    return NextResponse.json({ url: blob.url });
+  }
+
+  // fallback lokal (development)
+  const dir = path.join(process.cwd(), "public", "uploads");
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, name), Buffer.from(await file.arrayBuffer()));
   return NextResponse.json({ url: "/uploads/" + name });
 }

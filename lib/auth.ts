@@ -1,30 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { readSession } from "@/lib/session";
 
-export function requireAdmin(req: NextRequest): NextResponse | null {
-  if (!readSession(req).adminId) {
-    return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  }
+export async function requireAdmin(req: NextRequest): Promise<NextResponse | null> {
+  const s = await readSession(req);
+  if (!s.adminId) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   return null;
 }
 
-export function requireUser(req: NextRequest): { userId: number } | NextResponse {
-  const s = readSession(req);
+export async function requireUser(req: NextRequest): Promise<{ userId: number } | NextResponse> {
+  const s = await readSession(req);
   if (!s.userId) return NextResponse.json({ error: "Kamu harus login dulu." }, { status: 401 });
   return { userId: s.userId };
 }
 
 export type TokoUser = { id: number; role: string; status: string; store_id: number | null };
 
-export function requireToko(req: NextRequest): TokoUser | NextResponse {
-  const s = readSession(req);
+export async function requireToko(req: NextRequest): Promise<TokoUser | NextResponse> {
+  const s = await readSession(req);
   if (!s.userId) return NextResponse.json({ error: "Kamu harus login dulu." }, { status: 401 });
 
-  const user = db
-    .prepare("SELECT id, role, status, store_id FROM users WHERE id = ?")
-    .get(s.userId) as TokoUser | undefined;
-
+  const user = await prisma.user.findUnique({
+    where: { id: s.userId },
+    select: { id: true, role: true, status: true, store_id: true },
+  });
   if (!user || user.role !== "toko") {
     return NextResponse.json({ error: "Akses khusus akun toko." }, { status: 403 });
   }

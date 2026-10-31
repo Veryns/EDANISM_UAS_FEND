@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const deny = requireAdmin(req);
+  const deny = await requireAdmin(req);
   if (deny) return deny;
-  const rows = db
-    .prepare(
-      `SELECT users.id AS user_id, users.nama, users.email, users.created_at,
-              stores.id AS store_id, stores.nama AS store_nama, stores.alamat AS store_alamat
-       FROM users
-       JOIN stores ON stores.id = users.store_id
-       WHERE users.role = 'toko' AND users.status = 'pending'
-       ORDER BY users.created_at ASC`
-    )
-    .all();
-  return NextResponse.json(rows);
+  const rows = await prisma.user.findMany({
+    where: { role: "toko", status: "pending", store: { isNot: null } },
+    include: { store: true },
+    orderBy: { created_at: "asc" },
+  });
+  return NextResponse.json(
+    rows.map((u) => ({
+      user_id: u.id,
+      nama: u.nama,
+      email: u.email,
+      created_at: u.created_at,
+      store_id: u.store?.id,
+      store_nama: u.store?.nama,
+      store_alamat: u.store?.alamat,
+    }))
+  );
 }

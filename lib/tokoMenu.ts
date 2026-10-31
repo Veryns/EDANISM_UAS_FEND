@@ -20,7 +20,7 @@ export function readMenuImages(body: any): string[] | null | undefined {
 
   const clean = list.filter((u) => typeof u === "string" && u.trim()).map((u) => u.trim());
   if (clean.length > MAX_MENU_IMAGES) return null;
-  if (!clean.every((u) => u.startsWith("/uploads/"))) return null;
+  if (!clean.every((u) => u.startsWith("/uploads/") || u.startsWith("https://"))) return null;
   return clean;
 }
 
