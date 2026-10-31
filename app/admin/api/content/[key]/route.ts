@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
+import { jsonBody } from "@/lib/serialize";
 
 const ALLOWED = [
   "site", "hero", "toko_populer", "menu_section", "about", "history",
@@ -9,11 +11,11 @@ const ALLOWED = [
 type Ctx = { params: Promise<{ key: string }> };
 
 export async function GET(req: NextRequest, ctx: Ctx) {
-  const deny = requireAdmin(req);
+  const deny = await requireAdmin(req);
   if (deny) return deny;
   const { key } = await ctx.params;
   if (!ALLOWED.includes(key)) return NextResponse.json({ error: "Unknown content section." }, { status: 404 });
-  const row = db.prepare("SELECT data FROM content_blocks WHERE key = ?").get(key) as any;
+  const row = await prisma.contentBlock.findUnique({ where: { key } });
   if (!row) return NextResponse.json({ error: "Content section not found." }, { status: 404 });
   const data = JSON.parse(row.data);
   if (key === "about" && data.images === undefined) {
@@ -23,15 +25,15 @@ export async function GET(req: NextRequest, ctx: Ctx) {
 }
 
 export async function PUT(req: NextRequest, ctx: Ctx) {
-  const deny = requireAdmin(req);
+  const deny = await requireAdmin(req);
   if (deny) return deny;
   const { key } = await ctx.params;
   if (!ALLOWED.includes(key)) return NextResponse.json({ error: "Unknown content section." }, { status: 404 });
-  const existing = db.prepare("SELECT data FROM content_blocks WHERE key = ?").get(key) as any;
+  const existing = await prisma.contentBlock.findUnique({ where: { key } });
   if (!existing) return NextResponse.json({ error: "Content section not found." }, { status: 404 });
 
   const current = JSON.parse(existing.data);
-  const incoming: any = (await req.json().catch(() => ({}))) || {};
+  const incoming = await jsonBody(req);
   const merged: Record<string, any> = { ...current };
   const fields = Object.keys(current);
   if (key === "about" && !fields.includes("images")) fields.push("images");
@@ -57,9 +59,6 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     }
   });
 
-  db.prepare("UPDATE content_blocks SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE key = ?").run(
-    JSON.stringify(merged),
-    key
-  );
+  await prisma.contentBlock.update({ where: { key }, data: { data: JSON.stringify(merged) } });
   return NextResponse.json(merged);
 }

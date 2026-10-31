@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["better-sqlite3", "bcrypt"],
+  serverExternalPackages: ["bcrypt"],
+  outputFileTracingIncludes: {
+    "/admin": ["./private/**/*"],
+    "/admin/login": ["./private/**/*"],
+  },
 };
 
 export default nextConfig;

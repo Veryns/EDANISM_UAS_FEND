@@ -1,20 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireToko } from "@/lib/auth";
+import { jsonBody } from "@/lib/serialize";
 import { cleanMenuBody, readMenuImages, imagesToColumn, MAX_MENU_IMAGES } from "@/lib/tokoMenu";
 
 export async function GET(req: NextRequest) {
-  const t = requireToko(req);
+  const t = await requireToko(req);
   if (t instanceof NextResponse) return t;
-  return NextResponse.json(
-    db.prepare("SELECT * FROM menu_items WHERE store_id = ? ORDER BY sort_order ASC, id ASC").all(t.store_id)
-  );
+  if (!t.store_id) return NextResponse.json([]);
+  const rows = await prisma.menuItem.findMany({
+    where: { store_id: t.store_id },
+    orderBy: [{ sort_order: "asc" }, { id: "asc" }],
+  });
+  return NextResponse.json(rows);
 }
 
 export async function POST(req: NextRequest) {
-  const t = requireToko(req);
+  const t = await requireToko(req);
   if (t instanceof NextResponse) return t;
-  const body = await req.json().catch(() => ({}));
+  if (!t.store_id) return NextResponse.json({ error: "Toko tidak ditemukan." }, { status: 404 });
+  const body = await jsonBody(req);
 
   const m = cleanMenuBody(body);
   if (!m.nama) return NextResponse.json({ error: "Nama menu wajib diisi." }, { status: 400 });
@@ -29,12 +34,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const info = db
-    .prepare(
-      "INSERT INTO menu_items (nama, deskripsi, harga, image_url, store_id, sort_order) VALUES (?, ?, ?, ?, ?, 0)"
-    )
-    .run(m.nama, m.deskripsi || "", m.harga || "", imagesToColumn(images || []), t.store_id);
-
-  const row = db.prepare("SELECT * FROM menu_items WHERE id = ?").get(info.lastInsertRowid);
+  const row = await prisma.menuItem.create({
+    data: {
+      nama: m.nama,
+      deskripsi: m.deskripsi || "",
+      harga: m.harga || "",
+      image_url: imagesToColumn(images || []),
+      store_id: t.store_id,
+      sort_order: 0,
+    },
+  });
   return NextResponse.json({ ok: true, menu: row }, { status: 201 });
 }

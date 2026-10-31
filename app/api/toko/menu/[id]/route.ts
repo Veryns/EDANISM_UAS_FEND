@@ -1,20 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireToko } from "@/lib/auth";
+import { jsonBody } from "@/lib/serialize";
 import { cleanMenuBody, readMenuImages, imagesToColumn, MAX_MENU_IMAGES } from "@/lib/tokoMenu";
 
 type Ctx = { params: Promise<{ id: string }> };
 
+async function ownMenu(id: string, storeId: number | null) {
+  const n = Number(id);
+  if (!Number.isInteger(n) || !storeId) return null;
+  return prisma.menuItem.findFirst({ where: { id: n, store_id: storeId } });
+}
+
 export async function PUT(req: NextRequest, ctx: Ctx) {
-  const t = requireToko(req);
+  const t = await requireToko(req);
   if (t instanceof NextResponse) return t;
-  const { id } = await ctx.params;
-  const row = db
-    .prepare("SELECT * FROM menu_items WHERE id = ? AND store_id = ?")
-    .get(Number(id), t.store_id) as any;
+  const row = await ownMenu((await ctx.params).id, t.store_id);
   if (!row) return NextResponse.json({ error: "Menu tidak ditemukan." }, { status: 404 });
 
-  const body = await req.json().catch(() => ({}));
+  const body = await jsonBody(req);
   const m = cleanMenuBody(body);
   const nama = m.nama !== undefined ? m.nama : row.nama;
   if (!nama) return NextResponse.json({ error: "Nama menu wajib diisi." }, { status: 400 });
@@ -29,27 +33,28 @@ export async function PUT(req: NextRequest, ctx: Ctx) {
     );
   }
 
-  db.prepare("UPDATE menu_items SET nama = ?, deskripsi = ?, harga = ?, image_url = ? WHERE id = ?").run(
-    nama,
-    m.deskripsi !== undefined ? m.deskripsi : row.deskripsi,
-    m.harga !== undefined ? m.harga : row.harga,
-    images !== undefined ? imagesToColumn(images) : row.image_url,
-    row.id
-  );
-  return NextResponse.json({ ok: true, menu: db.prepare("SELECT * FROM menu_items WHERE id = ?").get(row.id) });
+  const updated = await prisma.menuItem.update({
+    where: { id: row.id },
+    data: {
+      nama,
+      deskripsi: m.deskripsi !== undefined ? m.deskripsi : row.deskripsi,
+      harga: m.harga !== undefined ? m.harga : row.harga,
+      image_url: images !== undefined ? imagesToColumn(images) : row.image_url,
+    },
+  });
+  return NextResponse.json({ ok: true, menu: updated });
 }
 
 export async function DELETE(req: NextRequest, ctx: Ctx) {
-  const t = requireToko(req);
+  const t = await requireToko(req);
   if (t instanceof NextResponse) return t;
-  const { id } = await ctx.params;
-  const row = db
-    .prepare("SELECT id FROM menu_items WHERE id = ? AND store_id = ?")
-    .get(Number(id), t.store_id) as any;
+  const row = await ownMenu((await ctx.params).id, t.store_id);
   if (!row) return NextResponse.json({ error: "Menu tidak ditemukan." }, { status: 404 });
 
-  db.prepare("DELETE FROM testimonials WHERE target_type = 'menu' AND target_id = ?").run(row.id);
-  db.prepare("DELETE FROM wishlist_items WHERE item_type = 'menu' AND item_id = ?").run(row.id);
-  db.prepare("DELETE FROM menu_items WHERE id = ?").run(row.id);
+  await prisma.$transaction([
+    prisma.testimonial.deleteMany({ where: { target_type: "menu", target_id: row.id } }),
+    prisma.wishlistItem.deleteMany({ where: { item_type: "menu", item_id: row.id } }),
+    prisma.menuItem.delete({ where: { id: row.id } }),
+  ]);
   return NextResponse.json({ ok: true });
 }

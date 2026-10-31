@@ -4,7 +4,7 @@ import path from "path";
 import { readSession } from "@/lib/session";
 
 export async function GET(req: NextRequest) {
-  if (!readSession(req).adminId) {
+  if (!(await readSession(req)).adminId) {
     const url = req.nextUrl.clone();
     url.pathname = "/admin/login";
     return NextResponse.redirect(url);

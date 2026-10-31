@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireToko } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const t = requireToko(req);
+  const t = await requireToko(req);
   if (t instanceof NextResponse) return t;
+  if (!t.store_id) return NextResponse.json([]);
 
-  const menuIds = (db.prepare("SELECT id FROM menu_items WHERE store_id = ?").all(t.store_id) as any[]).map(
-    (r) => r.id
+  const menuIds = (await prisma.menuItem.findMany({ where: { store_id: t.store_id }, select: { id: true } })).map(
+    (m) => m.id
   );
-  const rows = db
-    .prepare(
-      `SELECT * FROM testimonials
-       WHERE (target_type = 'store' AND target_id = ?)
-          OR (target_type = 'menu' AND target_id IN (${menuIds.length ? menuIds.map(() => "?").join(",") : "NULL"}))
-       ORDER BY id DESC`
-    )
-    .all(t.store_id, ...menuIds);
+  const rows = await prisma.testimonial.findMany({
+    where: {
+      OR: [
+        { target_type: "store", target_id: t.store_id },
+        { target_type: "menu", target_id: { in: menuIds } },
+      ],
+    },
+    orderBy: { id: "desc" },
+  });
   return NextResponse.json(rows);
 }

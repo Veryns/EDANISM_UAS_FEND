@@ -1,10 +1,6 @@
 import { randomBytes } from "crypto";
 import type { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
-
-db.exec(
-  `CREATE TABLE IF NOT EXISTS sessions (sid TEXT PRIMARY KEY, data TEXT NOT NULL, expires INTEGER NOT NULL)`
-);
+import prisma from "@/lib/prisma";
 
 const COOKIE = "sid";
 const TTL_MS = 8 * 60 * 60 * 1000;
@@ -16,32 +12,31 @@ export type SessionData = {
   userNama?: string;
 };
 
-export function readSession(req: NextRequest): SessionData {
+export async function readSession(req: NextRequest): Promise<SessionData> {
   const sid = req.cookies.get(COOKIE)?.value;
   if (!sid) return {};
-  const row = db.prepare("SELECT data, expires FROM sessions WHERE sid = ?").get(sid) as
-    | { data: string; expires: number }
-    | undefined;
-  if (!row || row.expires < Date.now()) return {};
-  return JSON.parse(row.data);
+  const row = await prisma.session.findUnique({ where: { sid } });
+  if (!row || Number(row.expires) < Date.now()) return {};
+  try {
+    return JSON.parse(row.data);
+  } catch {
+    return {};
+  }
 }
 
-export function endSession(req: NextRequest, res: NextResponse) {
+export async function endSession(req: NextRequest, res: NextResponse) {
   const sid = req.cookies.get(COOKIE)?.value;
-  if (sid) db.prepare("DELETE FROM sessions WHERE sid = ?").run(sid);
+  if (sid) await prisma.session.deleteMany({ where: { sid } });
   res.cookies.set(COOKIE, "", { path: "/", maxAge: 0 });
 }
 
-// regenerate: hapus session lama, buat baru
-export function startSession(req: NextRequest, res: NextResponse, data: SessionData) {
+export async function startSession(req: NextRequest, res: NextResponse, data: SessionData) {
   const old = req.cookies.get(COOKIE)?.value;
-  if (old) db.prepare("DELETE FROM sessions WHERE sid = ?").run(old);
+  if (old) await prisma.session.deleteMany({ where: { sid: old } });
   const sid = randomBytes(24).toString("hex");
-  db.prepare("INSERT INTO sessions (sid, data, expires) VALUES (?, ?, ?)").run(
-    sid,
-    JSON.stringify(data),
-    Date.now() + TTL_MS
-  );
+  await prisma.session.create({
+    data: { sid, data: JSON.stringify(data), expires: BigInt(Date.now() + TTL_MS) },
+  });
   res.cookies.set(COOKIE, sid, {
     httpOnly: true,
     sameSite: "lax",

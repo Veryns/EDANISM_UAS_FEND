@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+
+  @@map("admin_users")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  nama          String
+  email         String         @unique
+  password_hash String
+  role          String         @default("user")
+  status        String         @default("approved")
+  store_id      Int?
+  store         Store?         @relation(fields: [store_id], references: [id])
+  created_at    DateTime       @default(now())
+  wishlist      WishlistItem[]
+
+  @@map("users")
+}
+
+model Store {
+  id              Int        @id @default(autoincrement())
+  nama            String
+  alamat          String?
+  jam_buka        String?
+  jam_tutup       String?
+  rating          Float      @default(0)
+  ulasan_count    Int        @default(0)
+  sort_order      Int        @default(0)
+  image_url       String?
+  approval_status String     @default("approved")
+  created_at      DateTime   @default(now())
+  menus           MenuItem[]
+  users           User[]
+
+  @@map("stores")
+}
+
+model MenuItem {
+  id         Int      @id @default(autoincrement())
+  nama       String
+  deskripsi  String?
+  harga      String?
+  sort_order Int      @default(0)
+  image_url  String?
+  store_id   Int?
+  store      Store?   @relation(fields: [store_id], references: [id])
+  created_at DateTime @default(now())
+
+  @@map("menu_items")
+}
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  nama        String
+  ulasan      String?
+  waktu       String?
+  stars       Int      @default(5)
+  sort_order  Int      @default(0)
+  approved    Int      @default(0)
+  target_type String?
+  target_id   Int?
+  target_nama String?
+  created_at  DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+model Faq {
+  id         Int      @id @default(autoincrement())
+  question   String
+  answer     String?
+  sort_order Int      @default(0)
+  created_at DateTime @default(now())
+
+  @@map("faqs")
+}
+
+model WishlistItem {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  item_type  String
+  item_id    Int
+  created_at DateTime @default(now())
+
+  @@unique([user_id, item_type, item_id])
+  @@map("wishlist_items")
+}
+
+model ContentBlock {
+  key        String   @id
+  data       String
+  updated_at DateTime @default(now()) @updatedAt
+
+  @@map("content_blocks")
+}
+
+model Session {
+  sid     String @id
+  data    String
+  expires BigInt
+
+  @@map("sessions")
+}

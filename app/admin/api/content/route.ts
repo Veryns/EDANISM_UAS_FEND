@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { requireAdmin } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
-  const deny = requireAdmin(req);
+  const deny = await requireAdmin(req);
   if (deny) return deny;
-  const rows = db.prepare("SELECT key, data FROM content_blocks").all() as any[];
+  const rows = await prisma.contentBlock.findMany();
   const result: Record<string, unknown> = {};
   rows.forEach((r) => (result[r.key] = JSON.parse(r.data)));
   return NextResponse.json(result);
