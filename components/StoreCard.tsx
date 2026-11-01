@@ -17,7 +17,7 @@ export default function StoreCard({
   const popular = variant === "popular";
   return (
     <div className="store-card" onClick={onOpen}>
-      <CardMedia value={store.image_url} alt={store.nama} placeholder={popular ? "Ceritanya gambar lokasi" : ""} />
+      <CardMedia value={store.image_url} alt={store.nama} />
       <div className="card-body">
         <button
           className={"wishlist-btn" + (wished ? " saved" : "")}

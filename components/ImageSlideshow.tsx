@@ -38,10 +38,8 @@ export default function ImageSlideshow({ value, alt }: { value: unknown; alt: st
   );
 }
 
-export function CardMedia({ value, alt, placeholder }: { value: unknown; alt: string; placeholder?: string }) {
-  if (!imageList(value).length) {
-    return placeholder ? <div className="card-media">{placeholder}</div> : null;
-  }
+export function CardMedia({ value, alt }: { value: unknown; alt: string }) {
+  if (!imageList(value).length) return null;
   return (
     <div className="card-media has-slideshow">
       <ImageSlideshow value={value} alt={alt} />
