@@ -14,7 +14,7 @@ export default function MenuCard({
 }) {
   return (
     <div className="menu-card" onClick={onOpen}>
-      <CardMedia value={menu.image_url} alt={menu.nama} placeholder="Ceritanya gambar Menu" />
+      <CardMedia value={menu.image_url} alt={menu.nama} />
       <div className="card-body">
         <button
           className={"wishlist-btn" + (wished ? " saved" : "")}
