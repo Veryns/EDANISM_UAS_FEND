@@ -41,7 +41,7 @@ export default function AuthModal({
     const { ok, data } = await post("/api/user/login", { email: email.trim(), password });
     if (!ok) return setErr(data.error || "Login gagal. Coba lagi.");
     if (data.role === "toko") {
-      window.location.href = "/toko-dashboard.html";
+      window.location.href = "/toko-dashboard";
       return;
     }
     onAuthed({ nama: data.nama, email: data.email, role: data.role });
