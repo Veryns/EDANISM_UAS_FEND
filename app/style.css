@@ -786,3 +786,19 @@ p{margin:0 0 8px;}
 .confirm-cancel:hover{background:#F4EEE1;}
 .confirm-ok{background:var(--pink-text);color:#fff;}
 .confirm-ok:hover{filter:brightness(1.08);}
+
+.modal-backdrop.open{
+  opacity:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.modal-backdrop.open .modal{
+  display:block;
+  position:relative;
+  top:auto;
+  left:auto;
+  height:auto;
+  overflow:visible;
+  z-index:auto;
+}
