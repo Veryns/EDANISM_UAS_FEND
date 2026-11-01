@@ -24,7 +24,7 @@ export default function Navbar({
           {user ? (
             <div className="user-chip">
               <span>Hai, {user.nama}</span>
-              {user.role === "toko" && <a href="/toko-dashboard.html" className="btn btn-mustard">Dashboard Toko</a>}
+              {user.role === "toko" && <a href="/toko-dashboard" className="btn btn-mustard">Dashboard Toko</a>}
               <button className="btn btn-outline-light" onClick={onLogout}>Logout</button>
             </div>
           ) : (
