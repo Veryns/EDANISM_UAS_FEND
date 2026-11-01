@@ -17,7 +17,7 @@ export default function Navbar({
           <Link href="/#tentang">About</Link>
           <Link href="/#faq">FAQ</Link>
           {}
-          {user && <a href="/wishlist.html">List Aku</a>}
+          {user && <Link href="/wishlist">List Aku</Link>}
           <Link href="/#kontak">Contact</Link>
         </nav>
         <div id="authArea">

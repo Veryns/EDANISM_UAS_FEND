@@ -14,8 +14,8 @@ export default function StoreDetailModal({
 }) {
   const open = store ? storeIsOpen(store, now) : false;
   return (
-    <div className={"modal-overlay" + (store ? " active" : "")} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="modal-box modal-box-lg">
+    <div className={"modal-backdrop" + (store ? " active" : "")} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal modal-lg">
         <button className="modal-close" onClick={onClose}>&times;</button>
         {store && (
           <>
