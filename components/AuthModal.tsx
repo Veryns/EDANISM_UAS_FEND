@@ -67,8 +67,8 @@ export default function AuthModal({
   }
 
   return (
-    <div className="modal-overlay open" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="modal-box">
+    <div className="modal-backdrop open" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal">
         <button className="modal-close" aria-label="Tutup" onClick={onClose}>&times;</button>
 
         <div className="modal-tabs">

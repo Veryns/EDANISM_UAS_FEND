@@ -7,8 +7,8 @@ export default function MenuDetailModal({
   menu, onClose, onOpenStore,
 }: { menu?: MenuItem; onClose: () => void; onOpenStore: (id: number) => void }) {
   return (
-    <div className={"modal-overlay" + (menu ? " active" : "")} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="modal-box modal-box-lg">
+    <div className={"modal-backdrop" + (menu ? " active" : "")} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal modal-lg">
         <button className="modal-close" onClick={onClose}>&times;</button>
         {menu && (
           <>
