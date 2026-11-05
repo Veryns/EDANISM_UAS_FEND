@@ -83,9 +83,12 @@ async function main() {
   if ((await prisma.store.count()) === 0) {
     await prisma.store.createMany({
       data: [
-        { nama: "Es Pisang Ijo Bu Ida", alamat: "Jl. Pengayoman, Makassar", jam_buka: "08:00", jam_tutup: "21:00", rating: 4.8, ulasan_count: 128, sort_order: 1 },
-        { nama: "Pisang Ijo Daeng Sija", alamat: "Jl. Boulevard, Makassar", jam_buka: "09:00", jam_tutup: "20:00", rating: 4.6, ulasan_count: 96, sort_order: 2 },
-        { nama: "Pisang Ijo Ratu Rasa", alamat: "Jl. Sultan Alauddin, Makassar", jam_buka: "10:00", jam_tutup: "18:00", rating: 4.5, ulasan_count: 54, sort_order: 3 },
+        { nama: "Es Pisang Ijo Bu Ida", alamat: "Jl. Pengayoman, Makassar", jam_buka: "08:00", jam_tutup: "21:00", rating: 4.8, ulasan_count: 128, sort_order: 1,
+          image_url: "/uploads/store-1790496130361-785391602.jpg" },
+        { nama: "Pisang Ijo Daeng Sija", alamat: "Jl. Boulevard, Makassar", jam_buka: "09:00", jam_tutup: "20:00", rating: 4.6, ulasan_count: 96, sort_order: 2,
+          image_url: "/uploads/store-1790496106061-62432345.jpg" },
+        { nama: "Pisang Ijo Ratu Rasa", alamat: "Jl. Sultan Alauddin, Makassar", jam_buka: "10:00", jam_tutup: "18:00", rating: 4.5, ulasan_count: 54, sort_order: 3,
+          image_url: "/uploads/store-1790494451960-219993804.jpg" },
       ],
     });
   }
@@ -93,10 +96,10 @@ async function main() {
   if ((await prisma.menuItem.count()) === 0) {
     await prisma.menuItem.createMany({
       data: [
-        { nama: "Pisang Ijo Original", deskripsi: "Saus santan, bubur sumsum", harga: "Rp 15.000", sort_order: 1, store_id: 1 },
-        { nama: "Pisang Ijo Cokelat", deskripsi: "Topping cokelat leleh", harga: "Rp 17.000", sort_order: 2, store_id: 1 },
-        { nama: "Pisang Ijo Durian", deskripsi: "Dengan durian asli", harga: "Rp 20.000", sort_order: 3, store_id: 2 },
-        { nama: "Pisang Ijo Keju", deskripsi: "Taburan keju parut", harga: "Rp 18.000", sort_order: 4, store_id: 3 },
+        { nama: "Pisang Ijo Original", deskripsi: "Saus santan, bubur sumsum", harga: "Rp 15.000", sort_order: 1, store_id: 1, image_url: "/uploads/store-1790494451960-219993804.jpg" },
+        { nama: "Pisang Ijo Cokelat", deskripsi: "Topping cokelat leleh", harga: "Rp 17.000", sort_order: 2, store_id: 1, image_url: "/uploads/store-1790495510783-504936886.jpg" },
+        { nama: "Pisang Ijo Durian", deskripsi: "Dengan durian asli", harga: "Rp 20.000", sort_order: 3, store_id: 2, image_url: "/uploads/store-1790495797518-967299715.jpg" },
+        { nama: "Pisang Ijo Keju", deskripsi: "Taburan keju parut", harga: "Rp 18.000", sort_order: 4, store_id: 3, image_url: "/uploads/store-1790495923685-503154035.jpg" },
       ],
     });
   }

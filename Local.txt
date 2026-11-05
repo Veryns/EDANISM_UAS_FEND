@@ -1,8 +1,12 @@
 Tambahan SQLite lokal
 
+urutan:
 npm install
 npm run db:local
 npm run db:local:seed
-npm run dev:local   
+npm run dev:local  
+
+fix code supaya db kereset (yang sudah di input sebelumnnya di local ikut di reset)
+  npm run db:local:reset
 
 http://localhost:3000
