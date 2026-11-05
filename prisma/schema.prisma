@@ -116,3 +116,15 @@ model Session {
 
   @@map("sessions")
 }
+
+model SiteVisit {
+  id         Int      @id @default(autoincrement())
+  visitor_id String
+  day        String
+  user_id    Int?
+  created_at DateTime @default(now())
+
+  @@unique([visitor_id, day])
+  @@index([day])
+  @@map("site_visits")
+}

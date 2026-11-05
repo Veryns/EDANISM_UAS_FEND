@@ -5,13 +5,14 @@ import { TABS, LISTS } from "@/lib/adminConfig";
 import ContentForm from "@/components/admin/ContentForm";
 import CrudTable from "@/components/admin/CrudTable";
 import TokoApproval from "@/components/admin/TokoApproval";
-
+import StatsPanel from "@/components/admin/StatsPanel";
+import UserList from "@/components/admin/UserList";
 type Store = { id: number; nama: string };
 
 export default function AdminDashboardClient() {
   const [ready, setReady] = useState(false);
   const [whoami, setWhoami] = useState("");
-  const [tab, setTab] = useState("hero");
+  const [tab, setTab] = useState("stats");
   const [stores, setStores] = useState<Store[]>([]);
   const [pending, setPending] = useState(0);
   const [reload, setReload] = useState(0);
@@ -76,7 +77,8 @@ export default function AdminDashboardClient() {
         <main className="admin-main">
           <div className="tab-panel active">
             <h2>{active.label}</h2>
-
+              {active.view === "stats" && <StatsPanel onAuthFail={authFail} />}
+              {active.view === "users" && <UserList onAuthFail={authFail} />}
             {active.approval && (
               <TokoApproval
                 onCount={setPending}
