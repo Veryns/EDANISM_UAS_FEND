@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../style.css";
 import BootstrapClient from "@/components/BootstrapClient";
+import VisitTracker from "@/components/VisitTracker";
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       />
       {children}
       <BootstrapClient />
+      <VisitTracker />
     </>
   );
 }

@@ -141,7 +141,9 @@ export const LISTS: Record<string, ListConfig> = {
 
 export type Section = { kind: "content"; key: string } | { kind: "list"; key: string };
 
-export const TABS: { id: string; label: string; icon: string; sections?: Section[]; approval?: boolean }[] = [
+export const TABS: { id: string; label: string; icon: string; sections?: Section[]; approval?: boolean;view?: "stats" | "users" }[] = [
+  { id: "stats", label: "Statistik Website", icon: "📊", view: "stats" },
+  { id: "users", label: "Data Pengguna", icon: "👥", view: "users" },
   { id: "hero", label: "Homepage Content", icon: "🏠", sections: [{ kind: "content", key: "hero" }] },
   { id: "toko", label: "Store Directory", icon: "🏪", sections: [{ kind: "content", key: "toko_populer" }, { kind: "list", key: "stores" }] },
   { id: "toko_approval", label: "Store Approvals", icon: "✅", approval: true },
