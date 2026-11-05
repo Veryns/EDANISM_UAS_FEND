@@ -5,7 +5,6 @@ import { checkRateLimit } from "@/lib/rateLimit";
 import { jsonBody } from "@/lib/serialize";
 import { dayKey } from "@/lib/day";
 
-// Mencatat 1 baris per pengunjung per hari (visitor_id anonim dari browser).
 export async function POST(req: NextRequest) {
   if (!checkRateLimit(req, "track", 30, 60 * 60 * 1000)) {
     return NextResponse.json({ ok: true });
@@ -16,9 +15,11 @@ export async function POST(req: NextRequest) {
   }
   const s = await readSession(req).catch(() => ({}) as { userId?: number });
   try {
-    await prisma.siteVisit.createMany({
-      data: [{ visitor_id: vid, day: dayKey(), user_id: s.userId ?? null }],
-      skipDuplicates: true,
+    const day = dayKey();
+    await prisma.siteVisit.upsert({
+      where: { visitor_id_day: { visitor_id: vid, day } },
+      update: {},
+      create: { visitor_id: vid, day, user_id: s.userId ?? null },
     });
   } catch {
     // pelacakan tidak boleh mengganggu website

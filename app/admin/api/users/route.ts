@@ -11,11 +11,13 @@ export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get("q") || "").trim();
   const role = req.nextUrl.searchParams.get("role") || "";
 
+  const ci = process.env.DATABASE_URL?.startsWith("file:") ? {} : { mode: "insensitive" as const };
+
   const users = await prisma.user.findMany({
     where: {
       ...(role === "user" || role === "toko" ? { role } : {}),
       ...(q
-        ? { OR: [{ nama: { contains: q, mode: "insensitive" } }, { email: { contains: q, mode: "insensitive" } }] }
+        ? { OR: [{ nama: { contains: q, ...ci } }, { email: { contains: q, ...ci } }] }
         : {}),
     },
     select: {

@@ -7,7 +7,12 @@
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "dev:local": "cross-env DATABASE_URL=file:./dev.db prisma generate --schema prisma/schema.sqlite.prisma && cross-env DATABASE_URL=file:./dev.db next dev",
+    "db:local": "cross-env DATABASE_URL=file:./dev.db prisma generate --schema prisma/schema.sqlite.prisma && cross-env DATABASE_URL=file:./dev.db prisma db push --schema prisma/schema.sqlite.prisma",
+    "db:local:seed": "cross-env DATABASE_URL=file:./dev.db tsx --env-file=.env prisma/seed.ts",
+    "db:local:reset": "cross-env DATABASE_URL=file:./dev.db prisma db push --schema prisma/schema.sqlite.prisma --force-reset",
+    "db:local:studio": "cross-env DATABASE_URL=file:./dev.db prisma studio --schema prisma/schema.sqlite.prisma"
   },
   "prisma": {
     "seed": "tsx --env-file=.env.local prisma/seed.ts"
@@ -31,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "tailwindcss": "^4",

@@ -1,0 +1,8 @@
+Tambahan SQLite lokal
+
+npm install
+npm run db:local
+npm run db:local:seed
+npm run dev:local   
+
+http://localhost:3000
