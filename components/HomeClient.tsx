@@ -17,7 +17,7 @@ import StoreDetailModal from "@/components/StoreDetailModal";
 import MenuDetailModal from "@/components/MenuDetailModal";
 import { imageList, scrollToId, storeIsOpen, txt, type SiteData, type User } from "@/lib/home";
 
-const MENU_PAGE_SIZE = 8;
+const MENU_UNGGULAN_LIMIT = 6;
 const TESTI_PAGE_SIZE = 6;
 
 export default function HomeClient() {
@@ -37,7 +37,6 @@ export default function HomeClient() {
   const [fSort, setFSort] = useState("Rating Tertinggi");
   const [applied, setApplied] = useState({ nama: "", status: "Semua Status", sort: "Rating Tertinggi" });
 
-  const [menuPage, setMenuPage] = useState(1);
   const [testiPage, setTestiPage] = useState(1);
 
   const { content, stores, menu, testimonials, faqs } = data;
@@ -122,9 +121,11 @@ export default function HomeClient() {
     return list;
   }, [stores, applied, now]);
 
-  const menuPages = Math.max(1, Math.ceil(menu.length / MENU_PAGE_SIZE));
-  const mp = Math.min(menuPage, menuPages);
-  const menuItems = menu.slice((mp - 1) * MENU_PAGE_SIZE, mp * MENU_PAGE_SIZE);
+  // Menu Unggulan: server sudah mengurutkan menu dari rating tertinggi.
+  // Menu yang belum punya ulasan disetujui tidak ditampilkan, lalu diambil 6 teratas.
+  const menuItems = menu // <-- BARU
+    .filter((m) => (m.ulasan_count ?? 0) > 0)
+    .slice(0, MENU_UNGGULAN_LIMIT);
 
   const testiPages = Math.max(1, Math.ceil(testimonials.length / TESTI_PAGE_SIZE));
   const tp = Math.min(testiPage, testiPages);
@@ -175,14 +176,14 @@ export default function HomeClient() {
         </div>
       </section>
 
-      {/* MENU */}
+      {/* MENU UNGGULAN (rating tertinggi, maksimal 6, hanya yang sudah punya rating) */}
       <section className="section section-tinted" id="menu">
         <div className="container">
           <div className="section-head section-head-center">
             <h2>{txt(content, "menu_section.heading", "Menu Unggulan")}</h2>
             <p className="section-sub">{txt(content, "menu_section.subheading", "Pilih paduan rasa favorit untuk anda coba nanti")}</p>
           </div>
-          <div className="grid grid-4">
+          <div className="menu-unggulan-grid">
             {menuItems.map((m) => (
               <MenuCard
                 key={m.id} menu={m}
@@ -193,10 +194,11 @@ export default function HomeClient() {
               />
             ))}
           </div>
-          <Pagination
-            light page={mp} total={menuPages}
-            onChange={(p) => { setMenuPage(p); scrollToId("menu"); }}
-          />
+          {menuItems.length === 0 && ( // <-- BARU
+            <p className="section-sub" style={{ textAlign: "center" }}>
+              Belum ada menu yang dinilai. Jadilah yang pertama memberi ulasan!
+            </p>
+          )}
         </div>
       </section>
 

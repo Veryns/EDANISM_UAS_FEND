@@ -16,6 +16,8 @@ export type MenuItem = {
   store_id?: number | null;
   store_nama?: string;
   store_alamat?: string;
+  rating?: number;
+  ulasan_count?: number;
 };
 export type Testimonial = {
   id: number;

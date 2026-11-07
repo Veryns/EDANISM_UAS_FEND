@@ -12,6 +12,7 @@ export default function MenuCard({
   onOpen: () => void;
   onOpenStore: (id: number) => void;
 }) {
+  const hasRating = (menu.ulasan_count ?? 0) > 0;
   return (
     <div className="menu-card" onClick={onOpen}>
       <CardMedia value={menu.image_url} alt={menu.nama} />
@@ -25,6 +26,13 @@ export default function MenuCard({
           {wished ? "♥" : "♡"}
         </button>
         <h3>{menu.nama}</h3>
+        <p className="menu-rating">
+          {hasRating ? (
+            <>★ {menu.rating} <span className="menu-rating-count">({menu.ulasan_count} ulasan)</span></>
+          ) : (
+            <span className="menu-rating-count">Belum ada rating</span>
+          )}
+        </p>
         <p className="desc">{menu.deskripsi || ""}</p>
         <span className="price">{menu.harga || ""}</span>
         {menu.store_nama && menu.store_id ? (
