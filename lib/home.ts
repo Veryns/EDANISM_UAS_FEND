@@ -2,6 +2,7 @@ export type Store = {
   id: number;
   nama: string;
   alamat?: string;
+  maps_url?: string | null;
   jam_buka?: string;
   jam_tutup?: string;
   rating: number;

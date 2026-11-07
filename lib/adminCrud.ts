@@ -10,6 +10,8 @@ export type Field = {
   type: "string" | "int" | "float";
   default: unknown;
   nullable?: boolean;
+  /** Validasi/normalisasi khusus. Lempar Error(pesan) jika nilai tidak valid. */
+  transform?: (val: unknown) => unknown;
 };
 export type CrudConfig = {
   model: "store" | "menuItem" | "testimonial" | "faq";
@@ -21,6 +23,7 @@ type Ctx = { params: Promise<{ id: string }> };
 
 function coerce(val: any, f: Field) {
   if (val === undefined) val = f.default;
+  if (f.transform) val = f.transform(val);
   if (f.nullable && (val === "" || val === null || val === undefined)) return null;
   if (f.type === "string") {
     if (val === null || val === undefined) return "";
@@ -50,7 +53,11 @@ export function makeCrud({ model, fields, requiredField, beforeDelete }: CrudCon
         return NextResponse.json({ error: `${requiredField} is required.` }, { status: 400 });
       }
       const data: Record<string, unknown> = {};
-      fields.forEach((f) => (data[f.name] = coerce(body[f.name], f)));
+      try {
+        fields.forEach((f) => (data[f.name] = coerce(body[f.name], f)));
+      } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
       const created = await d().create({ data });
       return NextResponse.json(created, { status: 201 });
     },
@@ -64,9 +71,13 @@ export function makeCrud({ model, fields, requiredField, beforeDelete }: CrudCon
       if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
       const body: any = (await req.json().catch(() => ({}))) || {};
       const data: Record<string, unknown> = {};
-      fields.forEach((f) => {
-        if (body[f.name] !== undefined) data[f.name] = coerce(body[f.name], f);
-      });
+      try {
+        fields.forEach((f) => {
+          if (body[f.name] !== undefined) data[f.name] = coerce(body[f.name], f);
+        });
+      } catch (err: any) {
+        return NextResponse.json({ error: err.message }, { status: 400 });
+      }
       const updated = await d().update({ where: { id }, data });
       return NextResponse.json(updated);
     },

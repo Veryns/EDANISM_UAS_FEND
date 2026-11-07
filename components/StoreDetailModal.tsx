@@ -44,6 +44,17 @@ export default function StoreDetailModal({
                 <div className="info-chip"><strong>Jam Buka</strong><span>{formatStoreHours(store)}</span></div>
               </div>
 
+              {store.maps_url && (
+                <a
+                  className="btn btn-mustard btn-maps"
+                  href={store.maps_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  📍 Buka di Google Maps
+                </a>
+              )}
+
               <h4>Menu Tersedia</h4>
               <div className="detail-menu-list">
                 {menus.length === 0 ? (

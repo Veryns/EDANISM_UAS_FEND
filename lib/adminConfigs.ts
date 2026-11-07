@@ -1,4 +1,5 @@
 import { makeCrud } from "@/lib/adminCrud";
+import { normalizeMapsUrl, MAPS_URL_ERROR } from "@/lib/maps";
 
 export const stores = makeCrud({
   model: "store",
@@ -6,6 +7,14 @@ export const stores = makeCrud({
   fields: [
     { name: "nama", type: "string", default: "" },
     { name: "alamat", type: "string", default: "" },
+    {
+      name: "maps_url", type: "string", default: "", nullable: true,
+      transform: (v) => {
+        const m = normalizeMapsUrl(v);
+        if (m === null) throw new Error(MAPS_URL_ERROR);
+        return m;
+      },
+    },
     { name: "jam_buka", type: "string", default: "" },
     { name: "jam_tutup", type: "string", default: "" },
     { name: "rating", type: "float", default: 0 },

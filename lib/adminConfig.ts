@@ -90,6 +90,7 @@ export const LISTS: Record<string, ListConfig> = {
     fields: [
       { name: "nama", label: "Nama Toko", type: "text", required: true },
       { name: "alamat", label: "Alamat", type: "text" },
+      { name: "maps_url", label: "Link Google Maps (opsional)", type: "text" },
       { name: "jam_buka", label: "Jam Buka", type: "time", required: true },
       { name: "jam_tutup", label: "Jam Tutup", type: "time", required: true },
       { name: "rating", label: "Rating", type: "number", step: "0.1", min: "0", max: "5" },

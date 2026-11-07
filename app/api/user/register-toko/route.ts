@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { jsonBody } from "@/lib/serialize";
+import { normalizeMapsUrl, MAPS_URL_ERROR } from "@/lib/maps";
 
 const isValidEmail = (e: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
 
@@ -10,12 +11,15 @@ export async function POST(req: NextRequest) {
   if (!checkRateLimit(req, "user-auth", 20, 15 * 60 * 1000)) {
     return NextResponse.json({ error: "Terlalu banyak percobaan. Coba lagi nanti." }, { status: 429 });
   }
-  const { nama, email, password, nama_toko, alamat } = await jsonBody(req);
+  const { nama, email, password, nama_toko, alamat, maps_url } = await jsonBody(req);
   if (!nama || !email || !password || !nama_toko) {
     return NextResponse.json({ error: "Nama, email, password, dan nama toko wajib diisi." }, { status: 400 });
   }
   if (!isValidEmail(email)) return NextResponse.json({ error: "Format email tidak valid." }, { status: 400 });
   if (String(password).length < 8) return NextResponse.json({ error: "Password minimal 8 karakter." }, { status: 400 });
+
+  const mapsUrl = normalizeMapsUrl(maps_url);
+  if (mapsUrl === null) return NextResponse.json({ error: MAPS_URL_ERROR }, { status: 400 });
 
   const mail = String(email).toLowerCase().trim();
   if (await prisma.user.findUnique({ where: { email: mail } })) {
@@ -34,6 +38,7 @@ export async function POST(req: NextRequest) {
         create: {
           nama: String(nama_toko).trim(),
           alamat: String(alamat || "").trim(),
+          maps_url: mapsUrl || null,
           approval_status: "pending",
           sort_order: 0,
         },
