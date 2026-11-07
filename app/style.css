@@ -802,3 +802,34 @@ p{margin:0 0 8px;}
   overflow:visible;
   z-index:auto;
 }
+
+.menu-card .menu-rating{
+  display:flex;align-items:center;gap:4px;
+  color:var(--mustard-dark);font-weight:600;font-size:0.9rem;margin:2px 0 6px;
+}
+.menu-card .menu-rating-count{
+  color:var(--text-muted);font-weight:400;font-size:0.8rem;
+}
+
+.menu-unggulan-grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:24px;
+}
+.menu-unggulan-grid > .menu-card{
+  flex:0 0 calc((100% - 48px) / 3);
+  max-width:calc((100% - 48px) / 3);
+}
+@media (max-width:900px){
+  .menu-unggulan-grid > .menu-card{
+    flex:0 0 calc((100% - 24px) / 2);
+    max-width:calc((100% - 24px) / 2);
+  }
+}
+@media (max-width:560px){
+  .menu-unggulan-grid > .menu-card{
+    flex:0 0 100%;
+    max-width:100%;
+  }
+}
