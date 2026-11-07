@@ -17,6 +17,7 @@ export default function AuthModal({
   const [nama, setNama] = useState("");
   const [namaToko, setNamaToko] = useState("");
   const [alamat, setAlamat] = useState("");
+  const [mapsUrl, setMapsUrl] = useState("");
 
   function switchTab(t: Tab) {
     setTab(t);
@@ -54,7 +55,7 @@ export default function AuthModal({
     if (regType === "toko") {
       const { ok, data } = await post("/api/user/register-toko", {
         nama: nama.trim(), email: email.trim(), password,
-        nama_toko: namaToko.trim(), alamat: alamat.trim(),
+        nama_toko: namaToko.trim(), alamat: alamat.trim(), maps_url: mapsUrl.trim(),
       });
       if (!ok) return setErr(data.error || "Registrasi gagal. Coba lagi.");
       setTokoMsg(data.message);
@@ -125,6 +126,11 @@ export default function AuthModal({
                 <div className="field">
                   <label htmlFor="registerAlamatToko">Alamat Toko</label>
                   <textarea id="registerAlamatToko" rows={2} value={alamat} onChange={(e) => setAlamat(e.target.value)} />
+                </div>
+                <div className="field">
+                  <label htmlFor="registerMapsUrl">Link Google Maps (opsional)</label>
+                  <input type="url" id="registerMapsUrl" inputMode="url" placeholder="https://maps.app.goo.gl/..." value={mapsUrl} onChange={(e) => setMapsUrl(e.target.value)} />
+                  <p className="field-hint">Buka toko di Google Maps, tekan Bagikan, lalu salin tautannya.</p>
                 </div>
                 <p className="field-hint">Pendaftaran toko akan ditinjau admin sebelum bisa login dan tampil ke publik.</p>
               </div>

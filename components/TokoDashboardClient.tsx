@@ -20,7 +20,7 @@ export default function TokoDashboardClient() {
   const [ready, setReady] = useState(false);
   const [whoami, setWhoami] = useState("");
 
-  const [store, setStore] = useState({ nama: "", alamat: "", jam_buka: "", jam_tutup: "" });
+  const [store, setStore] = useState({ nama: "", alamat: "", maps_url: "", jam_buka: "", jam_tutup: "" });
   const [storeImages, setStoreImages] = useState<string[]>([]);
   const [storeMsg, setStoreMsg] = useState<Msg>(null);
 
@@ -43,6 +43,7 @@ export default function TokoDashboardClient() {
     setStore({
       nama: s.nama || "",
       alamat: s.alamat || "",
+      maps_url: s.maps_url || "",
       jam_buka: s.jam_buka || "",
       jam_tutup: s.jam_tutup || "",
     });
@@ -90,7 +91,7 @@ export default function TokoDashboardClient() {
     const res = await fetch("/api/toko/me", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...store, nama: store.nama.trim(), alamat: store.alamat.trim(), images: storeImages }),
+      body: JSON.stringify({ ...store, nama: store.nama.trim(), alamat: store.alamat.trim(), maps_url: store.maps_url.trim(), images: storeImages }),
     });
     const d = await res.json().catch(() => ({}));
     if (!res.ok) return setStoreMsg({ text: d.error || "Gagal menyimpan.", ok: false });
@@ -186,6 +187,11 @@ export default function TokoDashboardClient() {
             <div className="dash-field">
               <label htmlFor="storeAlamat">Alamat</label>
               <textarea id="storeAlamat" rows={2} value={store.alamat} onChange={(e) => setStore({ ...store, alamat: e.target.value })} />
+            </div>
+            <div className="dash-field">
+              <label htmlFor="storeMapsUrl">Link Google Maps</label>
+              <input id="storeMapsUrl" type="url" inputMode="url" placeholder="https://maps.app.goo.gl/..." value={store.maps_url} onChange={(e) => setStore({ ...store, maps_url: e.target.value })} />
+              <p className="img-manager-hint">Buka toko kamu di Google Maps, tekan Bagikan, lalu tempel tautannya di sini. Kosongkan untuk menghapus tombol peta.</p>
             </div>
             <div className="dash-row">
               <div className="dash-field">

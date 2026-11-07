@@ -10,6 +10,7 @@ export default function RegisterTokoClient() {
     password: "",
     nama_toko: "",
     alamat: "",
+    maps_url: "",
   });
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,7 +40,7 @@ export default function RegisterTokoClient() {
         return;
       }
       setMsg({ text: data.message, ok: true });
-      setForm({ nama: "", email: "", password: "", nama_toko: "", alamat: "" });
+      setForm({ nama: "", email: "", password: "", nama_toko: "", alamat: "", maps_url: "" });
     } catch {
       setMsg({ text: "Terjadi kesalahan jaringan. Coba lagi.", ok: false });
     } finally {
@@ -83,6 +84,12 @@ export default function RegisterTokoClient() {
             <div className="auth-field">
               <label htmlFor="alamat">Alamat Toko</label>
               <textarea id="alamat" rows={3} value={form.alamat} onChange={set("alamat")} />
+            </div>
+
+            <div className="auth-field">
+              <label htmlFor="maps_url">Link Google Maps (opsional)</label>
+              <input type="url" id="maps_url" inputMode="url" placeholder="https://maps.app.goo.gl/..." value={form.maps_url} onChange={set("maps_url")} />
+              <p className="field-hint">Buka toko kamu di Google Maps, tekan Bagikan, lalu salin tautannya.</p>
             </div>
 
             <button type="submit" className="btn btn-mustard auth-submit" disabled={loading}>
