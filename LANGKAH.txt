@@ -1,0 +1,18 @@
+SQLite untuk lokal:
+Buat file .env :
+     COOKIE_SECURE=false
+     ADMIN_USERNAME=admin
+     ADMIN_PASSWORD=admin12345
+
+npm install
+
+Pastikan Pasang Sekali (jika better-sqlite3 tidak terbaca)
+  npm install --ignore-scripts
+  npm rebuild better-sqlite3
+  node -e "require('better-sqlite3')(':memory:'); console.log('better-sqlite3 OK')"
+Harus muncul "better-sqlite3 OK" sebelum lanjut
+
+npm run db:local          -> buat data/local.db + tabel
+npm run db:local:seed     -> data dasar + foto + admin
+npm run dev:local         -> http://localhost:3000   (admin: /admin/login)
+Reset total: npm run db:local:reset (hapus semua database yang tersimpan)

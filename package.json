@@ -8,11 +8,10 @@
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint",
-    "dev:local": "cross-env DATABASE_URL=file:./dev.db prisma generate --schema prisma/schema.sqlite.prisma && cross-env DATABASE_URL=file:./dev.db next dev",
-    "db:local": "cross-env DATABASE_URL=file:./dev.db prisma generate --schema prisma/schema.sqlite.prisma && cross-env DATABASE_URL=file:./dev.db prisma db push --schema prisma/schema.sqlite.prisma",
-    "db:local:seed": "cross-env DATABASE_URL=file:./dev.db tsx --env-file=.env prisma/seed.ts",
-    "db:local:reset": "cross-env DATABASE_URL=file:./dev.db prisma db push --schema prisma/schema.sqlite.prisma --force-reset",
-    "db:local:studio": "cross-env DATABASE_URL=file:./dev.db prisma studio --schema prisma/schema.sqlite.prisma"
+    "dev:local": "cross-env DATABASE_URL=file:./data/local.db next dev",
+    "db:local": "cross-env DATABASE_URL=file:./data/local.db tsx scripts/init-local-db.ts",
+    "db:local:seed": "cross-env DATABASE_URL=file:./data/local.db tsx --env-file=.env prisma/seed.ts",
+    "db:local:reset": "tsx scripts/reset-local-db.ts && npm run db:local && npm run db:local:seed"
   },
   "prisma": {
     "seed": "tsx --env-file=.env.local prisma/seed.ts"
@@ -21,6 +20,7 @@
     "@prisma/client": "^6.19.3",
     "@vercel/blob": "^2.8.2",
     "bcrypt": "^6.0.0",
+    "better-sqlite3": "^11.10.0",
     "bootstrap": "^5.3.8",
     "jquery": "^4.0.0",
     "next": "16.4.3",
@@ -31,6 +31,7 @@
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
     "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
     "@types/bootstrap": "^5.2.11",
     "@types/jquery": "^4.0.1",
     "@types/node": "^20",

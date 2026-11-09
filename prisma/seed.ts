@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/prisma";
 
 const blocks: Record<string, unknown> = {
   site: { site_title: "Pisang Ijo", logo_text: "Pisang Ijo" },
