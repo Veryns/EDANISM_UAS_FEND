@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { SkeletonStats } from "@/components/admin/Skeleton";
 import { Donut, HBars, Legend, Sparkline, TimeChart, fmtDate, type Row } from "@/components/admin/Charts";
 
 type Point = { date: string; visitors: number; registrations: number; accounts: number; wishlist: number; wishlistTotal: number };
@@ -75,7 +76,7 @@ export default function StatsPanel({ onAuthFail }: { onAuthFail: () => void }) {
   const view = useMemo(() => (s ? (range ? s.series.slice(-range) : s.series) : []), [s, range]);
 
   if (error) return <p className="hint">Gagal memuat statistik.</p>;
-  if (!s) return <p className="hint">Memuat statistik…</p>;
+  if (!s) return <SkeletonStats />;
 
   const last = (n: number) => s.series.slice(-n);
   const sum = (rows: Point[], k: "visitors" | "registrations" | "wishlist") => rows.reduce((a, r) => a + r[k], 0);

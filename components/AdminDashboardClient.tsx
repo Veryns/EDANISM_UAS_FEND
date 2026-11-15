@@ -1,21 +1,27 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { TABS, LISTS } from "@/lib/adminConfig";
+import { NAV, TABS } from "@/lib/adminConfig";
 import ContentForm from "@/components/admin/ContentForm";
 import CrudTable from "@/components/admin/CrudTable";
 import TokoApproval from "@/components/admin/TokoApproval";
 import StatsPanel from "@/components/admin/StatsPanel";
 import UserList from "@/components/admin/UserList";
+import Icon from "@/components/admin/Icon";
+import { SkeletonShell } from "@/components/admin/Skeleton";
+
 type Store = { id: number; nama: string };
 
 export default function AdminDashboardClient() {
   const [ready, setReady] = useState(false);
-  const [whoami, setWhoami] = useState("");
-  const [tab, setTab] = useState("stats");
+  const [username, setUsername] = useState("");
+  const [tabId, setTabId] = useState("stats");
+  const [viewId, setViewId] = useState("");
   const [stores, setStores] = useState<Store[]>([]);
   const [pending, setPending] = useState(0);
   const [reload, setReload] = useState(0);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [confirm, setConfirm] = useState<{ message: string; ok: () => void } | null>(null);
 
   const authFail = useCallback(() => {
@@ -29,18 +35,26 @@ export default function AdminDashboardClient() {
     setStores(Array.isArray(d) ? d : []);
   }, [authFail]);
 
+  const loadPending = useCallback(async () => {
+    const res = await fetch("/admin/api/toko-pending");
+    if (!res.ok) return;
+    const d = await res.json().catch(() => []);
+    setPending(Array.isArray(d) ? d.length : 0);
+  }, []);
+
   useEffect(() => {
     document.title = "Content Studio - Administration";
     fetch("/admin/auth/me")
       .then((r) => r.json())
       .then((d) => {
         if (!d.loggedIn) return authFail();
-        setWhoami("Halo, " + d.username);
+        setUsername(d.username);
         setReady(true);
         loadStores();
+        loadPending();
       })
       .catch(authFail);
-  }, [authFail, loadStores]);
+  }, [authFail, loadStores, loadPending]);
 
   async function logout() {
     const res = await fetch("/admin/auth/logout", { method: "POST" });
@@ -50,36 +64,86 @@ export default function AdminDashboardClient() {
 
   const askConfirm = useCallback((message: string, ok: () => void) => setConfirm({ message, ok }), []);
 
-  if (!ready) return null;
+  function go(id: string, view = "") {
+    setTabId(id);
+    setViewId(view);
+    setMobileOpen(false);
+  }
 
-  const active = TABS.find((t) => t.id === tab)!;
+  function toggleSidebar() {
+    if (window.matchMedia("(max-width: 900px)").matches) setMobileOpen((o) => !o);
+    else setCollapsed((c) => !c);
+  }
+
+  if (!ready) return <SkeletonShell />;
+
+  const tab = TABS.find((t) => t.id === tabId)!;
+  const group = NAV.find((g) => g.tabs.includes(tab))!;
+  const view = tab.views.find((v) => v.id === viewId) ?? tab.views[0];
+  const multi = tab.views.length > 1;
 
   return (
-    <>
-      <header className="admin-header">
-        <span className="admin-logo">Administration <em>Site</em></span>
-        <div className="admin-user">
-          <span>{whoami}</span>
-          <button className="btn-logout" onClick={logout}>Sign out</button>
+    <div className={"adm" + (collapsed ? " is-collapsed" : "") + (mobileOpen ? " is-open" : "")}>
+      <aside className="adm-side">
+        <div className="adm-brand">
+          <span className="adm-mark">C</span>
+          <span className="adm-brand-name">Content Studio</span>
         </div>
-      </header>
 
-      <div className="admin-shell">
-        <nav className="admin-sidebar">
-          {TABS.map((t) => (
-            <button key={t.id} className={"tab-btn" + (tab === t.id ? " active" : "")} onClick={() => setTab(t.id)}>
-              <span className="tab-icon">{t.icon}</span> {t.label}
-              {t.approval && pending > 0 && <span className="tab-count">{pending}</span>}
-            </button>
+        <nav className="adm-nav" aria-label="Admin">
+          {NAV.map((g) => (
+            <div key={g.label} className="adm-group">
+              <div className="adm-group-label">{g.label}</div>
+              {g.tabs.map((t) => (
+                <button key={t.id} type="button" className={"adm-link" + (tab.id === t.id ? " active" : "")}
+                  aria-current={tab.id === t.id ? "page" : undefined} onClick={() => go(t.id)}>
+                  <Icon name={t.icon} />
+                  <span>{t.label}</span>
+                  {t.id === "stores" && pending > 0 && <span className="adm-badge">{pending}</span>}
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
 
-        <main className="admin-main">
-          <div className="tab-panel active">
-            <h2>{active.label}</h2>
-              {active.view === "stats" && <StatsPanel onAuthFail={authFail} />}
-              {active.view === "users" && <UserList onAuthFail={authFail} />}
-            {active.approval && (
+        <div className="adm-user">
+          <span className="adm-avatar">{username.slice(0, 1).toUpperCase()}</span>
+          <span className="adm-user-name">{username}</span>
+          <button type="button" className="adm-icon-btn" onClick={logout} title="Sign out" aria-label="Sign out">
+            <Icon name="logout" />
+          </button>
+        </div>
+      </aside>
+
+      {mobileOpen && <div className="adm-scrim" onClick={() => setMobileOpen(false)} />}
+
+      <div className="adm-body">
+        <header className="adm-top">
+          <button type="button" className="adm-icon-btn" onClick={toggleSidebar} aria-label="Toggle sidebar">
+            <Icon name="sidebar" />
+          </button>
+          <span className="adm-crumb">{group.label}<i>/</i><strong>{tab.label}</strong></span>
+        </header>
+
+        <main className="adm-main">
+          <h1 className="adm-title">{tab.label}</h1>
+
+          {multi && (
+            <div className="range-pills adm-views" role="tablist" aria-label={tab.label}>
+              {tab.views.map((v) => (
+                <button key={v.id} type="button" role="tab" aria-selected={view.id === v.id}
+                  className={view.id === v.id ? "active" : ""} onClick={() => setViewId(v.id)}>
+                  {v.label}
+                  {v.kind === "approval" && pending > 0 && <span className="adm-badge">{pending}</span>}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="adm-page" key={tab.id + view.id}>
+            {view.kind === "stats" && <StatsPanel onAuthFail={authFail} />}
+            {view.kind === "users" && <UserList onAuthFail={authFail} />}
+            {view.kind === "approval" && (
               <TokoApproval
                 onCount={setPending}
                 onAuthFail={authFail}
@@ -88,7 +152,7 @@ export default function AdminDashboardClient() {
               />
             )}
 
-            {active.sections?.map((s) =>
+            {view.sections?.map((s) =>
               s.kind === "content" ? (
                 <ContentForm key={s.key} contentKey={s.key} onAuthFail={authFail} />
               ) : (
@@ -122,6 +186,6 @@ export default function AdminDashboardClient() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
