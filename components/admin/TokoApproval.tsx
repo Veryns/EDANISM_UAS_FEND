@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { SkeletonTable } from "@/components/admin/Skeleton";
 
 type Pending = {
   user_id: number; nama: string; email: string; created_at: string;
@@ -15,7 +16,7 @@ export default function TokoApproval({
   onConfirm: (message: string, ok: () => void) => void;
   onApproved: () => void;
 }) {
-  const [items, setItems] = useState<Pending[]>([]);
+  const [items, setItems] = useState<Pending[] | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetch("/admin/api/toko-pending");
@@ -46,6 +47,8 @@ export default function TokoApproval({
       }
     );
   }
+
+  if (!items) return <SkeletonTable rows={4} cols={6} />;
 
   return (
     <table className="admin-table">

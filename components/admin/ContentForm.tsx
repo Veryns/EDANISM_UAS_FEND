@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CONTENT, parseImageList } from "@/lib/adminConfig";
 import FieldInput from "@/components/admin/FieldInput";
+import { SkeletonForm } from "@/components/admin/Skeleton";
 
 function renderPreview(key: string, d: Record<string, unknown>, images: string[]) {
   const s = (k: string) => String(d[k] ?? "");
@@ -83,9 +84,9 @@ function renderPreview(key: string, d: Record<string, unknown>, images: string[]
           <h4 className="pv-heading">{s("heading")}</h4>
           <p className="pv-sub">{s("note")}</p>
           <div className="pv-card">
-            <p>✉️ {s("email")}</p>
-            <p>💬 {s("whatsapp")}</p>
-            <p>🕒 {s("hours")}</p>
+            <p>Email: {s("email")}</p>
+            <p>WhatsApp: {s("whatsapp")}</p>
+            <p>Jam layanan: {s("hours")}</p>
           </div>
         </>
       );
@@ -115,6 +116,7 @@ export default function ContentForm({ contentKey, onAuthFail }: { contentKey: st
   const cfg = CONTENT[contentKey];
   const [data, setData] = useState<Record<string, unknown>>({});
   const [status, setStatus] = useState("");
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     fetch(`/admin/api/content/${contentKey}`)
@@ -123,7 +125,8 @@ export default function ContentForm({ contentKey, onAuthFail }: { contentKey: st
         return r.json();
       })
       .then((d) => setData(d || {}))
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoaded(true));
   }, [contentKey, onAuthFail]);
 
   async function save(e: React.FormEvent) {
@@ -143,6 +146,8 @@ export default function ContentForm({ contentKey, onAuthFail }: { contentKey: st
     setStatus(res.ok ? "Tersimpan ✓" : "Gagal menyimpan.");
     if (res.ok) setTimeout(() => setStatus(""), 2000);
   }
+
+  if (!loaded) return <SkeletonForm fields={Math.min(cfg.fields.length, 5)} />;
 
   return (
     <div className="form-preview-row">

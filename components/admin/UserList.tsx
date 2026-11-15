@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useState } from "react";
+import { Skel, SkeletonTable } from "@/components/admin/Skeleton";
 
 type WishItem = { type: "menu" | "store"; id: number; nama: string; created_at: string };
 type U = {
@@ -49,18 +50,21 @@ export default function UserList({ onAuthFail }: { onAuthFail: () => void }) {
           <option value="user">Pengguna</option>
           <option value="toko">Toko</option>
         </select>
-        <span className="hint" style={{ margin: 0 }}>{users ? `${users.length} akun` : ""}</span>
+        {users ? <span className="hint" style={{ margin: 0 }}>{users.length} akun</span> : <Skel w={60} h={12} />}
       </div>
 
       {error && <p className="hint">Gagal memuat data akun.</p>}
 
+      {!users && !error && <SkeletonTable rows={8} cols={6} />}
+
+      {users && (
       <table className="admin-table">
         <thead>
           <tr><th>Nama</th><th>Email</th><th>Jenis</th><th>Status</th><th>Wishlist</th><th>Terdaftar</th><th /></tr>
         </thead>
         <tbody>
-          {users && users.length === 0 && <tr><td colSpan={7} className="muted">Tidak ada akun.</td></tr>}
-          {users?.map((u) => (
+          {users.length === 0 && <tr><td colSpan={7} className="muted">Tidak ada akun.</td></tr>}
+          {users.map((u) => (
             <Fragment key={u.id}>
               <tr>
                 <td>{u.nama}</td>
@@ -111,6 +115,7 @@ export default function UserList({ onAuthFail }: { onAuthFail: () => void }) {
           ))}
         </tbody>
       </table>
+      )}
     </>
   );
 }

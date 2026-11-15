@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { LISTS, parseImageList } from "@/lib/adminConfig";
 import FieldInput from "@/components/admin/FieldInput";
+import { SkeletonTable } from "@/components/admin/Skeleton";
 
 type Item = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 type Store = { id: number; nama: string };
@@ -55,7 +56,7 @@ function renderListPreview(listKey: string, v: Item, stores: Store[]) {
           {img}
           <h4>{s("nama") || "Nama toko"}</h4>
           <p>{s("alamat") || "Alamat toko"}</p>
-          <p>🕒 {fmt(s("jam_buka"))} - {fmt(s("jam_tutup"))}</p>
+          <p>{fmt(s("jam_buka"))} - {fmt(s("jam_tutup"))}</p>
           <div className="pv-stars">{"★".repeat(r)}{"☆".repeat(5 - r)}</div>
           <div className="pv-row">
             <span className={"pv-status " + (open ? "buka" : "tutup")}>{open ? "Buka" : "Tutup"}</span>
@@ -123,7 +124,7 @@ export default function CrudTable({
   reloadSignal?: number;
 }) {
   const cfg = LISTS[listKey];
-  const [items, setItems] = useState<Item[]>([]);
+  const [items, setItems] = useState<Item[] | null>(null);
   const [editing, setEditing] = useState<{ item: Item | null; values: Item } | null>(null);
 
   const load = useCallback(async () => {
@@ -220,6 +221,9 @@ export default function CrudTable({
         <button type="button" className="btn-primary add-item-btn" onClick={() => open(null)}>+ Tambah {cfg.title}</button>
       </div>
 
+      {!items ? (
+        <SkeletonTable rows={5} cols={Math.min(cfg.columns.length, 5)} />
+      ) : (
       <table className="admin-table">
         <tbody>
           {items.length === 0 && (
@@ -236,6 +240,7 @@ export default function CrudTable({
           ))}
         </tbody>
       </table>
+      )}
 
       {editing && (
         <div className="modal-backdrop open" onClick={(e) => { if (e.target === e.currentTarget) setEditing(null); }}>

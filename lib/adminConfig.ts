@@ -142,21 +142,61 @@ export const LISTS: Record<string, ListConfig> = {
 
 export type Section = { kind: "content"; key: string } | { kind: "list"; key: string };
 
-export const TABS: { id: string; label: string; icon: string; sections?: Section[]; approval?: boolean;view?: "stats" | "users" }[] = [
-  { id: "stats", label: "Statistik Website", icon: "📊", view: "stats" },
-  { id: "users", label: "Data Pengguna", icon: "👥", view: "users" },
-  { id: "hero", label: "Homepage Content", icon: "🏠", sections: [{ kind: "content", key: "hero" }] },
-  { id: "toko", label: "Store Directory", icon: "🏪", sections: [{ kind: "content", key: "toko_populer" }, { kind: "list", key: "stores" }] },
-  { id: "toko_approval", label: "Store Approvals", icon: "✅", approval: true },
-  { id: "menu", label: "Menu Catalog", icon: "🍽️", sections: [{ kind: "content", key: "menu_section" }, { kind: "list", key: "menu" }] },
-  { id: "about", label: "About & History", icon: "📖", sections: [{ kind: "content", key: "about" }, { kind: "content", key: "history" }] },
-  { id: "testimoni", label: "Customer Reviews", icon: "💬", sections: [{ kind: "content", key: "testimonial_section" }, { kind: "list", key: "testimonials" }] },
-  { id: "cari", label: "Store Search Content", icon: "🔍", sections: [{ kind: "content", key: "cari_toko" }] },
-  { id: "faq", label: "FAQ Management", icon: "❓", sections: [{ kind: "content", key: "faq_section" }, { kind: "list", key: "faqs" }] },
-  { id: "contact", label: "Contact Information", icon: "✉️", sections: [{ kind: "content", key: "contact" }] },
-  { id: "footer", label: "Footer Content", icon: "📎", sections: [{ kind: "content", key: "footer" }] },
-  { id: "site", label: "Site Settings", icon: "⚙️", sections: [{ kind: "content", key: "site" }] },
+// A page (tab) can have several views, shown as pills above the content.
+export type View = {
+  id: string;
+  label: string;
+  kind?: "stats" | "users" | "approval";
+  sections?: Section[];
+};
+export type Tab = { id: string; label: string; icon: string; views: View[] };
+export type NavGroup = { label: string; tabs: Tab[] };
+
+const content = (id: string, label: string, key: string): View => ({ id, label, sections: [{ kind: "content", key }] });
+
+export const NAV: NavGroup[] = [
+  {
+    label: "Overview",
+    tabs: [
+      { id: "stats", label: "Dashboard", icon: "chart", views: [{ id: "main", label: "Dashboard", kind: "stats" }] },
+      { id: "users", label: "Users", icon: "users", views: [{ id: "main", label: "Users", kind: "users" }] },
+    ],
+  },
+  {
+    label: "Manage",
+    tabs: [
+      {
+        id: "stores", label: "Stores", icon: "store",
+        views: [
+          { id: "directory", label: "Directory", sections: [{ kind: "content", key: "toko_populer" }, { kind: "list", key: "stores" }] },
+          { id: "approvals", label: "Approvals", kind: "approval" },
+        ],
+      },
+      { id: "menu", label: "Menu", icon: "menu", views: [{ id: "main", label: "Menu", sections: [{ kind: "content", key: "menu_section" }, { kind: "list", key: "menu" }] }] },
+      { id: "reviews", label: "Reviews", icon: "message", views: [{ id: "main", label: "Reviews", sections: [{ kind: "content", key: "testimonial_section" }, { kind: "list", key: "testimonials" }] }] },
+      { id: "faq", label: "FAQ", icon: "help", views: [{ id: "main", label: "FAQ", sections: [{ kind: "content", key: "faq_section" }, { kind: "list", key: "faqs" }] }] },
+    ],
+  },
+  {
+    label: "Website",
+    tabs: [
+      {
+        id: "homepage", label: "Homepage", icon: "layout",
+        views: [
+          content("hero", "Hero", "hero"),
+          content("about", "About", "about"),
+          content("history", "History", "history"),
+          content("search", "Store search", "cari_toko"),
+          content("contact", "Contact", "contact"),
+          content("footer", "Footer", "footer"),
+        ],
+      },
+      { id: "site", label: "Settings", icon: "settings", views: [content("main", "Settings", "site")] },
+    ],
+  },
 ];
+
+export const TABS: Tab[] = NAV.flatMap((g) => g.tabs);
 
 export function parseImageList(value: unknown): string[] {
   if (Array.isArray(value)) return value.filter(Boolean) as string[];
