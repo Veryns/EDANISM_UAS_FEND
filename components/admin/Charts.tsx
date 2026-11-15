@@ -26,7 +26,7 @@ export type SeriesDef = {
   type: "area" | "bar" | "line"; axis?: "l" | "r";
 };
 
-export function TimeChart({ data, series, height = 260 }: { data: Row[]; series: SeriesDef[]; height?: number }) {
+export function TimeChart({ data, series, height = 210 }: { data: Row[]; series: SeriesDef[]; height?: number }) {
   const uid = useId().replace(/:/g, "");
   const wrap = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(640);

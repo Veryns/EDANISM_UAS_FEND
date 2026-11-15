@@ -26,13 +26,15 @@ export function SkeletonForm({ fields = 4 }: { fields?: number }) {
     <div className="form-preview-row" aria-busy="true" aria-label="Loading">
       <div className="content-form">
         <Skel w={140} h={12} className="sk-gap" />
-        {Array.from({ length: fields }, (_, i) => (
-          <div key={i} className="sk-field">
-            <Skel w={90} h={10} />
-            <Skel h={i === 1 ? 72 : 38} r={8} />
-          </div>
-        ))}
-        <Skel w={120} h={38} r={999} />
+        <div className="fields">
+          {Array.from({ length: fields }, (_, i) => (
+            <div key={i} className={"sk-field field" + (i === 1 ? " wide" : "")}>
+              <Skel w={90} h={10} />
+              <Skel h={i === 1 ? 64 : 32} r={8} />
+            </div>
+          ))}
+        </div>
+        <Skel w={120} h={32} r={999} />
       </div>
       <div className="preview-pane">
         <Skel w={80} h={10} className="sk-gap" />
@@ -86,9 +88,8 @@ export function SkeletonShell() {
         </nav>
       </aside>
       <div className="adm-body">
-        <header className="adm-top"><Skel w={32} h={32} r={8} /><Skel w={160} h={12} /></header>
+        <header className="adm-top"><Skel w={28} h={28} r={8} /><Skel w={160} h={12} /></header>
         <main className="adm-main">
-          <Skel w={200} h={26} className="sk-gap" />
           <SkeletonStats />
         </main>
       </div>

@@ -39,9 +39,9 @@ export default function FieldInput({
   }
 
   return (
-    <>
+    <div className={"field" + (def.type === "textarea" || def.type === "image" ? " wide" : "")}>
       <label>{def.label}</label>
       {input}
-    </>
+    </div>
   );
 }
