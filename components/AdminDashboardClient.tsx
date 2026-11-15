@@ -122,12 +122,10 @@ export default function AdminDashboardClient() {
           <button type="button" className="adm-icon-btn" onClick={toggleSidebar} aria-label="Toggle sidebar">
             <Icon name="sidebar" />
           </button>
-          <span className="adm-crumb">{group.label}<i>/</i><strong>{tab.label}</strong></span>
+          <h1 className="adm-crumb">{group.label}<i>/</i><strong>{tab.label}</strong></h1>
         </header>
 
         <main className="adm-main">
-          <h1 className="adm-title">{tab.label}</h1>
-
           {multi && (
             <div className="range-pills adm-views" role="tablist" aria-label={tab.label}>
               {tab.views.map((v) => (

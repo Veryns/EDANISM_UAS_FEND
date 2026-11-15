@@ -153,9 +153,11 @@ export default function ContentForm({ contentKey, onAuthFail }: { contentKey: st
     <div className="form-preview-row">
       <form className="content-form" onSubmit={save}>
         <h3 className="sub-heading">{cfg.title}</h3>
-        {cfg.fields.map((f) => (
-          <FieldInput key={f.name} def={f} value={data[f.name]} onChange={(v) => setData({ ...data, [f.name]: v })} />
-        ))}
+        <div className="fields">
+          {cfg.fields.map((f) => (
+            <FieldInput key={f.name} def={f} value={data[f.name]} onChange={(v) => setData({ ...data, [f.name]: v })} />
+          ))}
+        </div>
         <div className="form-actions">
           <button type="submit" className="btn-primary">Save Changes</button>
           <span className="save-status">{status}</span>
