@@ -5,7 +5,7 @@ const blocks: Record<string, unknown> = {
   site: { site_title: "Pisang Ijo", logo_text: "Pisang Ijo" },
   hero: {
     badge: "Platform Kuliner Makassar",
-    heading: "Temukan Es Pisang Ijo Favorit Kamu",
+    heading: "Pisang Ijo Favorit Kamu",
     subheading: "Jelajahi pilihan es pisang ijo dan temukan menu kesukaanmu",
     search_placeholder: "Cari toko atau menu es pisang ijo",
     cta_primary: "Cari Toko",

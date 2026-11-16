@@ -13,10 +13,10 @@ export default function Footer({ content = {} }: { content?: Content }) {
         <div>
           <h4>Tautan Cepat</h4>
           <ul>
-            <li><Link href="/#menu">Menu</Link></li>
-            <li><Link href="/#cari-toko">Cari Toko</Link></li>
-            <li><Link href="/#tentang">Tentang Kami</Link></li>
-            <li><Link href="/#faq">FAQ</Link></li>
+            <li><Link href="/menu">Menu</Link></li>
+            <li><Link href="/cari-toko">Cari Toko</Link></li>
+            <li><Link href="/tentang">Tentang Kami</Link></li>
+            <li><Link href="/faq">FAQ</Link></li>
           </ul>
         </div>
         <div>
