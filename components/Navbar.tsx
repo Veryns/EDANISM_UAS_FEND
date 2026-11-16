@@ -11,14 +11,13 @@ export default function Navbar({
       <div className="container header-inner">
         <Link href="/" className="logo">{logoText}</Link>
         <nav className="main-nav">
-          <Link href="/#beranda">Home</Link>
-          <Link href="/#cari-toko">Cari Toko</Link>
-          <Link href="/#menu">Menu</Link>
-          <Link href="/#tentang">About</Link>
-          <Link href="/#faq">FAQ</Link>
-          {}
+          <Link href="/">Home</Link>
+          <Link href="/cari-toko">Cari Toko</Link>
+          <Link href="/menu">Menu</Link>
+          <Link href="/tentang">About</Link>
+          <Link href="/faq">FAQ</Link>
           {user && <Link href="/wishlist">List Aku</Link>}
-          <Link href="/#kontak">Contact</Link>
+          <Link href="/kontak">Contact</Link>
         </nav>
         <div id="authArea">
           {user ? (

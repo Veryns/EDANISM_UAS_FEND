@@ -24,8 +24,8 @@ export default function Hero({ content, onSearch }: { content: Content; onSearch
         </form>
 
         <div className="hero-actions">
-          <Link href="/#cari-toko" className="btn btn-mustard">{txt(content, "hero.cta_primary", "Cari Toko")}</Link>
-          <Link href="/#menu" className="btn btn-outline-light">{txt(content, "hero.cta_secondary", "Lihat Menu")}</Link>
+          <Link href="/cari-toko" className="btn btn-mustard">{txt(content, "hero.cta_primary", "Cari Toko")}</Link>
+          <Link href="/menu" className="btn btn-outline-light">{txt(content, "hero.cta_secondary", "Lihat Menu")}</Link>
         </div>
       </div>
       <div className="hero-bowls" aria-hidden="true">

@@ -20,7 +20,9 @@ import { imageList, scrollToId, storeIsOpen, txt, type SiteData, type User } fro
 const MENU_UNGGULAN_LIMIT = 6;
 const TESTI_PAGE_SIZE = 6;
 
-export default function HomeClient() {
+export default function HomeClient({ only }: { only?: string }) {
+  const show = (id: string) => !only || only === id;
+
   const [data, setData] = useState<SiteData>({ content: {}, stores: [], menu: [], testimonials: [], faqs: [] });
   const [loadError, setLoadError] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -123,7 +125,7 @@ export default function HomeClient() {
 
   // Menu Unggulan: server sudah mengurutkan menu dari rating tertinggi.
   // Menu yang belum punya ulasan disetujui tidak ditampilkan, lalu diambil 6 teratas.
-  const menuItems = menu // <-- BARU
+  const menuItems = menu
     .filter((m) => (m.ulasan_count ?? 0) > 0)
     .slice(0, MENU_UNGGULAN_LIMIT);
 
@@ -150,9 +152,10 @@ export default function HomeClient() {
         onLogout={logout}
       />
 
-      <Hero content={content} onSearch={heroSearch} />
+      {!only && <Hero content={content} onSearch={heroSearch} />}
 
       {/* TOKO POPULER */}
+      {show("toko-populer") && (
       <section className="section" id="toko-populer">
         <div className="container">
           <div className="section-head">
@@ -160,7 +163,7 @@ export default function HomeClient() {
               <h2>{txt(content, "toko_populer.heading", "Toko Populer & Rating")}</h2>
               <p className="section-sub">{txt(content, "toko_populer.subheading", "Temukan toko yang sesuai dengan citarasa kesukaanmu")}</p>
             </div>
-            <Link href="/#cari-toko" className="link-arrow">{txt(content, "toko_populer.link_text", "Lihat semua toko")}</Link>
+            <Link href="/cari-toko" className="link-arrow">{txt(content, "toko_populer.link_text", "Lihat semua toko")}</Link>
           </div>
           <div className="grid grid-3">
             {loadError && <p style={{ color: "#B23A55" }}>Gagal memuat data dari server.</p>}
@@ -175,8 +178,10 @@ export default function HomeClient() {
           </div>
         </div>
       </section>
+      )}
 
       {/* MENU UNGGULAN (rating tertinggi, maksimal 6, hanya yang sudah punya rating) */}
+      {show("menu") && (
       <section className="section section-tinted" id="menu">
         <div className="container">
           <div className="section-head section-head-center">
@@ -194,15 +199,17 @@ export default function HomeClient() {
               />
             ))}
           </div>
-          {menuItems.length === 0 && ( // <-- BARU
+          {menuItems.length === 0 && (
             <p className="section-sub" style={{ textAlign: "center" }}>
               Belum ada menu yang dinilai. Jadilah yang pertama memberi ulasan!
             </p>
           )}
         </div>
       </section>
+      )}
 
       {/* TENTANG */}
+      {show("tentang") && (
       <section className="section" id="tentang">
         <div className="container about-grid">
           <div className="about-media">
@@ -232,8 +239,10 @@ export default function HomeClient() {
           </div>
         </div>
       </section>
+      )}
 
       {/* TESTIMONI */}
+      {show("testimoni") && (
       <section className="section section-dark" id="testimoni">
         <div className="container">
           <div className="section-head">
@@ -252,8 +261,10 @@ export default function HomeClient() {
           />
         </div>
       </section>
+      )}
 
       {/* CARI TOKO */}
+      {show("cari-toko") && (
       <section className="section" id="cari-toko">
         <div className="container">
           <div className="section-head">
@@ -304,8 +315,10 @@ export default function HomeClient() {
           </div>
         </div>
       </section>
+      )}
 
       {/* FAQ */}
+      {show("faq") && (
       <section className="section section-tinted" id="faq">
         <div className="container faq-wrap">
           <div className="section-head section-head-center">
@@ -315,8 +328,10 @@ export default function HomeClient() {
           <FaqAccordion faqs={faqs} />
         </div>
       </section>
+      )}
 
       {/* KONTAK */}
+      {show("kontak") && (
       <section className="section" id="kontak">
         <div className="container kontak-box">
           <div>
@@ -334,8 +349,9 @@ export default function HomeClient() {
           </div>
         </div>
       </section>
+      )}
 
-      <Footer content={content} />
+        {!only && <Footer content={content} />}
 
       {authTab && (
         <AuthModal
