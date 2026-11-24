@@ -51,7 +51,7 @@ export default function StoreDetailModal({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  📍 Buka di Google Maps
+                  Buka di Google Maps
                 </a>
               )}
 
