@@ -1,47 +1,62 @@
 "use client";
 
-import { CardMedia } from "@/components/ImageSlideshow";
-import { formatStoreHours, storeIsOpen, type Store } from "@/lib/home";
+import ImageSlideshow from "@/components/ImageSlideshow";
+import { HeartIcon } from "@/components/PjIcons";
+import { imageList, formatStoreHours, storeIsOpen, type Store } from "@/lib/home";
 
+// Kartu "Toko Populer" (kolom 1-3 pada desain)
 export default function StoreCard({
-  store, now, variant, wished, onWish, onOpen,
+  store, now, slot, wished, onWish, onOpen,
 }: {
   store: Store;
   now: Date;
-  variant: "popular" | "result";
+  slot: number;
   wished: boolean;
   onWish: () => void;
   onOpen: () => void;
 }) {
   const open = storeIsOpen(store, now);
-  const popular = variant === "popular";
+  const hasImg = imageList(store.image_url).length > 0;
   return (
-    <div className="store-card" onClick={onOpen}>
-      <CardMedia value={store.image_url} alt={store.nama} />
-      <div className="card-body">
-        <button
-          className={"wishlist-btn" + (wished ? " saved" : "")}
-          type="button"
-          title={wished ? "Hapus dari List Aku" : "Simpan ke List Aku"}
-          onClick={(e) => { e.stopPropagation(); onWish(); }}
-        >
-          {wished ? "♥" : "♡"}
-        </button>
+    <article className={"pj-store pj-store-" + slot} onClick={onOpen}>
+      {hasImg && (
+        <div className="pj-store-media">
+          <ImageSlideshow value={store.image_url} alt={store.nama} />
+        </div>
+      )}
+      <button
+        className={"pj-heart" + (wished ? " saved" : "")}
+        type="button"
+        title={wished ? "Hapus dari List Aku" : "Simpan ke List Aku"}
+        onClick={(e) => { e.stopPropagation(); onWish(); }}
+      >
+        <HeartIcon size={24} filled />
+      </button>
+      <h3 className="pj-store-name">{store.nama}</h3>
+      <p className="pj-store-hours">Jam Buka: {formatStoreHours(store)}</p>
+      <p className={"pj-store-status " + (open ? "open" : "closed")}>{open ? "Buka sekarang" : "Tutup"}</p>
+      <p className="pj-store-rate"><span>★</span> {store.rating}</p>
+    </article>
+  );
+}
+
+// Baris hasil "Cari Toko": foto + kartu info, selang-seling kiri/kanan
+export function StoreResult({
+  store, now, index, onOpen,
+}: { store: Store; now: Date; index: number; onOpen: () => void }) {
+  const open = storeIsOpen(store, now);
+  const hasImg = imageList(store.image_url).length > 0;
+  const flip = index % 2 === 1;
+  return (
+    <div className={"pj-row" + (flip ? " flip" : "")} style={{ top: 483 + index * 321 }} onClick={onOpen}>
+      <div className="pj-row-img">
+        {hasImg ? <ImageSlideshow value={store.image_url} alt={store.nama} /> : <span>Gambar</span>}
+      </div>
+      <div className="pj-row-info">
         <h3>{store.nama}</h3>
-        {!popular && <p className="meta">{store.alamat || ""}</p>}
-        <p className="meta">Jam Buka: {formatStoreHours(store)}</p>
-        <p className={"store-status " + (open ? "status-open" : "status-closed")}>
-          {open ? (popular ? "Buka sekarang" : "Buka") : "Tutup"}
-        </p>
-        <span className="rating">★ {store.rating}</span>
-        {!popular && (
-          <>
-            <br />
-            <a href="#" className="link-arrow" style={{ marginTop: 10, display: "inline-block" }} onClick={(e) => e.preventDefault()}>
-              Lihat Detail
-            </a>
-          </>
-        )}
+        <p className="pj-row-hours">Jam Buka: {formatStoreHours(store)}</p>
+        <p className={"pj-row-status " + (open ? "open" : "closed")}>{open ? "Buka sekarang" : "Tutup"}</p>
+        <p className="pj-row-rate"><span>★</span> {store.rating}</p>
       </div>
     </div>
   );
