@@ -3,7 +3,7 @@ import type { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 const COOKIE = "sid";
-const TTL_MS = 8 * 60 * 60 * 1000;
+const TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export type SessionData = {
   adminId?: number;
@@ -31,11 +31,12 @@ export async function endSession(req: NextRequest, res: NextResponse) {
 }
 
 export async function startSession(req: NextRequest, res: NextResponse, data: SessionData) {
-  const old = req.cookies.get(COOKIE)?.value;
+const old = req.cookies.get(COOKIE)?.value;
+const sebelumnya = await readSession(req);  
   if (old) await prisma.session.deleteMany({ where: { sid: old } });
   const sid = randomBytes(24).toString("hex");
   await prisma.session.create({
-    data: { sid, data: JSON.stringify(data), expires: BigInt(Date.now() + TTL_MS) },
+   data: { sid, data: JSON.stringify({ ...sebelumnya, ...data }), expires: BigInt(Date.now() + TTL_MS) },
   });
   res.cookies.set(COOKIE, sid, {
     httpOnly: true,
