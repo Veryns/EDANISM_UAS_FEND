@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LISTS, parseImageList } from "@/lib/adminConfig";
 import FieldInput from "@/components/admin/FieldInput";
 import { SkeletonTable } from "@/components/admin/Skeleton";
+import SitePreview, { LIST_TARGET, type PreviewPatch } from "@/components/admin/SitePreview";
 
 type Item = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 type Store = { id: number; nama: string };
@@ -37,82 +38,6 @@ const badge = (bg: string, fg: string, label: string) => (
   </span>
 );
 
-function renderListPreview(listKey: string, v: Item, stores: Store[]) {
-  const s = (k: string) => String(v[k] ?? "");
-  const imgs = parseImageList(v.image_url);
-  const img = imgs[0] ? (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img className="pv-img" src={imgs[0]} alt="" />
-  ) : (
-    <div className="pv-img-placeholder">Belum ada gambar</div>
-  );
-
-  switch (listKey) {
-    case "stores": {
-      const open = isOpen(v);
-      const r = Math.max(0, Math.min(5, Math.round(Number(v.rating) || 0)));
-      return (
-        <div className="pv-card">
-          {img}
-          <h4>{s("nama") || "Nama toko"}</h4>
-          <p>{s("alamat") || "Alamat toko"}</p>
-          <p>{fmt(s("jam_buka"))} - {fmt(s("jam_tutup"))}</p>
-          <div className="pv-stars">{"★".repeat(r)}{"☆".repeat(5 - r)}</div>
-          <div className="pv-row">
-            <span className={"pv-status " + (open ? "buka" : "tutup")}>{open ? "Buka" : "Tutup"}</span>
-            {imgs.length > 1 && <span className="pv-link">{imgs.length} foto</span>}
-          </div>
-        </div>
-      );
-    }
-    case "menu": {
-      const store = stores.find((x) => String(x.id) === s("store_id"));
-      return (
-        <div className="pvm-card">
-          {imgs[0] && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="pvm-img" src={imgs[0]} alt="" />
-          )}
-          <div className="pvm-body">
-            <div className="pvm-top">
-              <h4 className="pvm-title">{s("nama") || "Nama menu"}</h4>
-              <span className="pvm-heart">♡</span>
-            </div>
-            {s("deskripsi") && <p className="pvm-desc">{s("deskripsi")}</p>}
-            <div className="pvm-price">{s("harga") || "Rp -"}</div>
-            <div className="pvm-store">
-              Tersedia di: <strong>{store ? store.nama : "-"}</strong>
-            </div>
-            <span className="pvm-link">Lihat Toko Ini →</span>
-          </div>
-        </div>
-      );
-    }
-    case "testimonials": {
-      const n = Math.max(0, Math.min(5, Number(v.stars) || 0));
-      return (
-        <div className="pv-card">
-          <div className="pv-stars">{"★".repeat(n)}{"☆".repeat(5 - n)}</div>
-          <p>{s("ulasan") || "Isi ulasan"}</p>
-          <div className="pv-row">
-            <strong>{s("nama") || "Nama"}</strong>
-            <span className="pv-link">{s("waktu")}</span>
-          </div>
-        </div>
-      );
-    }
-    case "faqs":
-      return (
-        <div className="pv-faq-item">
-          <div className="q">{s("question") || "Pertanyaan"}</div>
-          <div className="a">{s("answer") || "Jawaban"}</div>
-        </div>
-      );
-    default:
-      return <p className="pv-empty">Belum ada preview.</p>;
-  }
-}
-
 export default function CrudTable({
   listKey, stores, onChanged, onAuthFail, onConfirm, reloadSignal,
 }: {
@@ -144,6 +69,11 @@ export default function CrudTable({
   function open(item: Item | null) {
     const values: Item = {};
     cfg.fields.forEach((f) => (values[f.name] = item ? item[f.name] : ""));
+    // Nilai hitungan situs (tidak bisa diedit, hanya untuk preview)
+    values.rating = item?.rating ?? 0;
+    values.ulasan_count = item?.ulasan_count ?? 0;
+    values.target_type = item?.target_type ?? "";
+    values.target_nama = item?.target_nama ?? "";
     setEditing({ item, values });
   }
 
@@ -187,6 +117,11 @@ export default function CrudTable({
       const open = isOpen(item);
       return <span className={"status-tag " + (open ? "buka" : "tutup")}>{open ? "Buka" : "Tutup"}</span>;
     }
+    if (col === "rating") return Number(val) > 0 ? `★ ${val}` : <span style={{ color: "#5B6B62" }}>Belum ada</span>;
+    if (col === "ulasan_count") return `${Number(val) || 0} ulasan`;
+    if (col === "target_nama") {
+      return val ? (item.target_type === "menu" ? "Menu: " : "Toko: ") + val : <span style={{ color: "#5B6B62" }}>Umum</span>;
+    }
     if (col === "jam_buka") return `${fmt(item.jam_buka)} - ${fmt(item.jam_tutup)}`;
     if (col === "approved") {
       return Number(val) === 1 ? badge("#E9F1EA", "#1E4D3B", "Disetujui") : badge("#FCEBD1", "#C9852A", "Menunggu");
@@ -213,6 +148,22 @@ export default function CrudTable({
     }
     return cut(val);
   }
+
+  // Draf yang sedang diisi di form -> dikirim ke situs (iframe) sebagai item pengganti
+  const patch = useMemo<PreviewPatch | undefined>(() => {
+    if (!editing) return undefined;
+    const v = editing.values;
+    const base = { ...v, id: editing.item?.id ?? -1 };
+    const kind = LIST_TARGET[listKey].kind;
+    if (kind === "store") {
+      return { kind, item: { ...base, image_url: JSON.stringify(parseImageList(v.image_url)), rating: Number(v.rating) || 0 } };
+    }
+    if (kind === "menu") {
+      return { kind, item: { ...base, image_url: JSON.stringify(parseImageList(v.image_url)), rating: Number(v.rating) || 0, ulasan_count: Number(v.ulasan_count) || 0, store_nama: stores.find((x) => String(x.id) === String(v.store_id))?.nama } };
+    }
+    if (kind === "testimonial") return { kind, item: { ...base, stars: Number(v.stars) || 5 } };
+    return { kind, item: base };
+  }, [editing, listKey, stores]);
 
   return (
     <div className="list-block">
@@ -260,9 +211,9 @@ export default function CrudTable({
             </div>
 
             <aside className="preview-pane modal-preview">
-              <div className="preview-pane-label">Live Preview</div>
-              <div className="preview-surface">
-                {renderListPreview(listKey, editing.values, stores)}
+              <div className="preview-pane-label">Live Preview · tampilan situs</div>
+              <div className="preview-surface preview-live">
+                <SitePreview target={LIST_TARGET[listKey].target} patch={patch} />
               </div>
             </aside>
           </div>

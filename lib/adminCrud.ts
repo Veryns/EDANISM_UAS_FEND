@@ -18,6 +18,8 @@ export type CrudConfig = {
   fields: Field[];
   requiredField: string;
   beforeDelete?: (id: number, tx: Tx) => Promise<void>;
+  /** Ubah baris sebelum dikirim ke admin (mis. hitung rating dari ulasan). */
+  decorate?: (rows: any[]) => Promise<any[]>;
 };
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -34,7 +36,7 @@ function coerce(val: any, f: Field) {
   return f.type === "int" ? Math.trunc(n) : n;
 }
 
-export function makeCrud({ model, fields, requiredField, beforeDelete }: CrudConfig) {
+export function makeCrud({ model, fields, requiredField, beforeDelete, decorate }: CrudConfig) {
   const d = () => (prisma as any)[model];
 
   return {
@@ -42,7 +44,7 @@ export function makeCrud({ model, fields, requiredField, beforeDelete }: CrudCon
       const deny = await requireAdmin(req);
       if (deny) return deny;
       const rows = await d().findMany({ orderBy: [{ sort_order: "asc" }, { id: "asc" }] });
-      return NextResponse.json(rows);
+      return NextResponse.json(decorate ? await decorate(rows) : rows);
     },
 
     async create(req: NextRequest) {

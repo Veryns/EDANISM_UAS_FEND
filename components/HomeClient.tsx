@@ -15,7 +15,13 @@ import AuthModal from "@/components/AuthModal";
 import ReviewModal from "@/components/ReviewModal";
 import StoreDetailModal from "@/components/StoreDetailModal";
 import MenuDetailModal from "@/components/MenuDetailModal";
-import { scrollToId, storeIsOpen, txt, type SiteData, type User } from "@/lib/home";
+import { scrollToId, storeIsOpen, txt, type Content, type SiteData, type User } from "@/lib/home";
+
+type PreviewPayload = {
+  target: string;
+  content?: { key: string; data: Record<string, string> };
+  patch?: { kind: "store" | "menu" | "testimonial" | "faq"; item: Record<string, unknown> };
+};
 
 const MENU_UNGGULAN_LIMIT = 6;
 const MENU_PAGE_SIZE = 4;
@@ -54,21 +60,100 @@ export default function HomeClient({ only }: { only?: string }) {
   const [testiPage, setTestiPage] = useState(1);
   const [menuPage, setMenuPage] = useState(1);
 
-  const { content, stores, menu, testimonials, faqs } = data;
+  // ---- Live preview admin: draf dari admin menimpa data sementara (tidak disimpan) ----
+  const [pv, setPv] = useState<PreviewPayload | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
-    fetch("/api/site-content")
-      .then((r) => r.json())
-      .then((d: SiteData) => {
-        setData(d);
-        const title = d.content?.site?.site_title;
-        if (typeof title === "string" && title) document.title = title;
-      })
-      .catch(() => setLoadError(true));
-    fetch("/api/user/me")
+    if (window.parent === window || !new URLSearchParams(window.location.search).has("pv")) return;
+    setPreviewMode(true);
+    const onMsg = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.source !== window.parent) return;
+      if (e.data?.type === "pv-update") setPv(e.data.payload as PreviewPayload);
+    };
+    window.addEventListener("message", onMsg);
+    window.parent.postMessage({ type: "pv-ready" }, window.location.origin);
+    return () => window.removeEventListener("message", onMsg);
+  }, []);
+
+  const view = useMemo<SiteData>(() => {
+    if (!pv) return data;
+    let d = data;
+    if (pv.content) {
+      const k = pv.content.key;
+      d = { ...d, content: { ...d.content, [k]: { ...(d.content[k] || {}), ...pv.content.data } as Content[string] } };
+    }
+    if (pv.patch) {
+      const item = { ...pv.patch.item, id: Number(pv.patch.item.id ?? -1) } as Record<string, unknown> & { id: number };
+      const put = <T extends { id: number }>(list: T[], it: T) => [it, ...list.filter((x) => x.id !== it.id)];
+      if (pv.patch.kind === "store") {
+        d = { ...d, stores: put(d.stores, item as unknown as SiteData["stores"][number]) };
+      } else if (pv.patch.kind === "menu") {
+        const store = d.stores.find((s) => s.id === Number(item.store_id));
+        const it = { ...item, preview: true, store_id: item.store_id ? Number(item.store_id) : null,
+          store_nama: store?.nama || item.store_nama, store_alamat: store?.alamat } as unknown as SiteData["menu"][number];
+        d = { ...d, menu: put(d.menu, it) };
+      } else if (pv.patch.kind === "testimonial") {
+        d = { ...d, testimonials: put(d.testimonials, item as unknown as SiteData["testimonials"][number]) };
+      } else if (pv.patch.kind === "faq") {
+        d = { ...d, faqs: put(d.faqs, item as unknown as SiteData["faqs"][number]) };
+      }
+    }
+    return d;
+  }, [data, pv]);
+
+  // Tampilkan hanya bagian yang sedang diedit: scroll ke sana & kabari tinggi iframe ke admin
+  useEffect(() => {
+    if (!previewMode || !pv) return;
+    const t = pv.target;
+    const header = document.querySelector(".pj-header") as HTMLElement | null;
+    if (header) header.style.display = t === "footer" ? "none" : "";
+    document.documentElement.style.scrollbarWidth = "none";
+    const measure = () => {
+      const el = t === "header" ? header : t === "footer" ? document.querySelector(".pj-footer") : document.getElementById(t);
+      if (!el) return;
+      const headerH = header && t !== "footer" ? header.getBoundingClientRect().height : 0;
+      const r = el.getBoundingClientRect();
+      const absTop = r.top + window.scrollY;
+      // hero menimpa header, jadi mulai dari atas; section lain ditampilkan bersama header
+      const top = t === "header" || t === "beranda" ? 0 : Math.max(0, absTop - headerH);
+      const height = t === "header" || t === "beranda" ? r.height : absTop + r.height - top;
+      window.scrollTo(0, top);
+      window.parent.postMessage({ type: "pv-size", height: Math.ceil(height) }, window.location.origin);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.body);
+    return () => ro.disconnect();
+  }, [previewMode, pv, view]);
+
+  const { content, stores, menu, testimonials, faqs } = view;
+
+  useEffect(() => {
+    function loadContent() {
+      fetch("/api/site-content", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((d: SiteData) => {
+          setData(d);
+          setLoadError(false);
+          const title = d.content?.site?.site_title;
+          if (typeof title === "string" && title) document.title = title;
+        })
+        .catch(() => setLoadError(true));
+    }
+    loadContent();
+    // Perubahan dari admin langsung tampil saat tab situs dibuka kembali.
+    const onVisible = () => { if (document.visibilityState === "visible") loadContent(); };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", loadContent);
+    fetch("/api/user/me", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => { if (d.loggedIn) setUser({ nama: d.nama, email: d.email, role: d.role }); })
       .catch(() => {});
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", loadContent);
+    };
   }, []);
 
   useEffect(() => {
@@ -139,7 +224,7 @@ export default function HomeClient({ only }: { only?: string }) {
   // Menu Unggulan: server sudah mengurutkan menu dari rating tertinggi.
   // Menu yang belum punya ulasan disetujui tidak ditampilkan, lalu diambil 6 teratas.
   const menuItems = menu
-    .filter((m) => (m.ulasan_count ?? 0) > 0)
+    .filter((m) => m.preview || (m.ulasan_count ?? 0) > 0)
     .slice(0, MENU_UNGGULAN_LIMIT);
 
   const testiPages = Math.max(1, Math.ceil(testimonials.length / TESTI_PAGE_SIZE));
@@ -231,7 +316,7 @@ export default function HomeClient({ only }: { only?: string }) {
           <div className="pj-pill pj-pill-1" aria-hidden="true" />
           <div className="pj-pill pj-pill-2" aria-hidden="true" />
           <div className="pj-blob-dark" aria-hidden="true" />
-          <h2 className="pj-about-h">Tentang Platform</h2>
+          <h2 className="pj-about-h">{txt(content, "about.heading", "Tentang Platform")}</h2>
           <p className="pj-about-p">
             {txt(content, "about.description", "Pisang Ijo Kita adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.")}
           </p>
@@ -240,7 +325,7 @@ export default function HomeClient({ only }: { only?: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="pj-banana" src="/design/banana.png" alt="Sesisir pisang" />
           <div className="pj-blob-cream" aria-hidden="true" />
-          <h2 className="pj-hist-h">Sejarah</h2>
+          <h2 className="pj-hist-h">{txt(content, "history.heading", "Sejarah")}</h2>
           <p className="pj-hist-p">
             {txt(content, "history.text", "Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.")}
           </p>
@@ -332,7 +417,7 @@ export default function HomeClient({ only }: { only?: string }) {
               <circle cx="1210" cy="232" r="52" /><circle cx="1292" cy="226" r="44" /><circle cx="1262" cy="262" r="42" />
             </g>
           </svg>
-          <h2 className="pj-faq-h">You Asked<br />We Answered</h2>
+          <h2 className="pj-faq-h" style={{ whiteSpace: "pre-line" }}>{txt(content, "faq_section.heading", "You Asked\nWe Answered")}</h2>
           <div className="pj-qo" style={{ left: 0, top: 700, opacity: 0.85 }} aria-hidden="true">QUESTION</div>
           <div className="pj-qo" style={{ left: -130, top: 1095, opacity: 0.7 }} aria-hidden="true">QUESTION</div>
           <div className="pj-qo" style={{ left: -260, top: 1490, opacity: 0.55 }} aria-hidden="true">QUESTION</div>
@@ -362,7 +447,7 @@ export default function HomeClient({ only }: { only?: string }) {
           <img className="pj-cs pj-c-sql" src="/design/contact-sq-left.svg" alt="" aria-hidden="true" />
           <img className="pj-cs pj-c-sqr" src="/design/contact-sq-right.svg" alt="" aria-hidden="true" />
           {/* eslint-enable @next/next/no-img-element */}
-          <h2 className="pj-contact-h">Contact</h2>
+          <h2 className="pj-contact-h">{txt(content, "contact.eyebrow", "Contact")}</h2>
           <p className="pj-contact-sub">{txt(content, "contact.heading", "Mari ngobrol tentang rasa favoritmu")}</p>
           <p className="pj-contact-k">Email<br />WhatsApp CS</p>
           <p className="pj-contact-v">

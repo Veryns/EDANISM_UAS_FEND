@@ -5,6 +5,8 @@ import { useEffect } from "react";
 // Mengirim 1 kali kunjungan per hari per browser. ID anonim, tanpa data pribadi.
 export default function VisitTracker() {
   useEffect(() => {
+    // iframe live preview di admin tidak dihitung sebagai pengunjung
+    if (new URLSearchParams(window.location.search).has("pv")) return;
     try {
       const today = new Date().toDateString();
       if (localStorage.getItem("visit_day") === today) return;
