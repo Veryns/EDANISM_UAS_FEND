@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
-import PjScale from "@/components/Pjscale";
 import StoreCard, { StoreResult } from "@/components/StoreCard";
 import MenuCard from "@/components/MenuCard";
 import TestimonialCard from "@/components/TestimonialCard";
@@ -28,14 +27,26 @@ const MENU_PAGE_SIZE = 4;
 const TESTI_PAGE_SIZE = 6;
 
 // Huruf vector "review" dari Figma (file ada di public/design/review-*.svg).
-// Posisi & lebar dalam koordinat stage 1440px.
-const REVIEW_LETTERS = [
-  { n: "r", left: 0, top: 236, w: 350 },
-  { n: "e1", left: 388, top: 284, w: 575 },
-  { n: "v", left: 932, top: 280, w: 509 },
-  { n: "i", left: 34, top: 960, w: 438 },
-  { n: "e2", left: 372, top: 790, w: 592 },
-  { n: "w", left: 806, top: 751, w: 634 },
+// Posisi & lebar dalam koordinat desain 1440x1781; dirender sebagai persen supaya ikut lebar bingkai.
+const REVIEW_LETTERS: { n: string; x: number; w: number; y?: number; b?: number; cut?: "l" | "r" }[] = [
+  // x / y / w = koordinat desain 1440 (y dari atas bingkai); b = jarak desain dari tepi bawah bingkai.
+  { n: "r", x: 0, y: 236, w: 350, cut: "l" },
+  { n: "e1", x: 388, y: 284, w: 575 },
+  { n: "v", x: 932, y: 280, w: 509, cut: "r" },
+  { n: "i", x: 34, b: 142, w: 438 },
+  { n: "e2", x: 372, b: 274, w: 592 },
+  { n: "w", x: 806, b: 147, w: 634, cut: "r" },
+];
+
+// Baris watermark "QUESTION" (left/top dalam persen dari section; desain asli 1440x2250).
+const FAQ_WATERMARK = [
+  { left: 0, top: 31, opacity: 0.85 },
+  { left: -9, top: 48.7, opacity: 0.7 },
+  { left: -18, top: 66.2, opacity: 0.55 },
+  { left: -27, top: 83.8, opacity: 0.25 },
+  { left: -36, top: 101.3, opacity: 0.25, extra: true },
+  { left: -45, top: 118.8, opacity: 0.25, extra: true },
+  { left: -54, top: 136.3, opacity: 0.25, extra: true },
 ];
 
 export default function HomeClient({ only }: { only?: string }) {
@@ -117,7 +128,7 @@ export default function HomeClient({ only }: { only?: string }) {
       const absTop = r.top + window.scrollY;
       // hero menimpa header, jadi mulai dari atas; section lain ditampilkan bersama header
       const top = t === "header" || t === "beranda" ? 0 : Math.max(0, absTop - headerH);
-      const height = t === "header" || t === "beranda" ? r.height : absTop + r.height - top;
+      const height = t === "header" ? r.height : absTop + r.height - top;
       window.scrollTo(0, top);
       window.parent.postMessage({ type: "pv-size", height: Math.ceil(height) }, window.location.origin);
     };
@@ -247,7 +258,6 @@ export default function HomeClient({ only }: { only?: string }) {
 
   return (
     <>
-      <PjScale />
       <Navbar
         logoText={txt(content, "site.logo_text", "Pisang Ijo")}
         user={user}
@@ -260,19 +270,25 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* TOKO POPULER */}
       {show("toko-populer") && (
       <section className={cls("pj-sec pj-toko")} id="toko-populer">
-        <div className="pj-stage" style={{ height: 2300  }}>
-          <h2 className="pj-toko-h">{txt(content, "toko_populer.heading", "Toko Populer & Rating")}</h2>
-          <p className="pj-toko-sub">{txt(content, "toko_populer.subheading", "Temukan toko yang sesuai dengan citarasa kesukaanmu.")}</p>
-          <Link href="/cari-toko" className="pj-toko-link">{txt(content, "toko_populer.link_text", "Lihat semua toko")}</Link>
+        <div className="pj-wrap">
+          <div className="pj-toko-head">
+            <div>
+              <h2 className="pj-toko-h">{txt(content, "toko_populer.heading", "Toko Populer & Rating")}</h2>
+              <p className="pj-toko-sub">{txt(content, "toko_populer.subheading", "Temukan toko yang sesuai dengan citarasa kesukaanmu.")}</p>
+            </div>
+            <Link href="/cari-toko" className="pj-toko-link">{txt(content, "toko_populer.link_text", "Lihat semua toko")}</Link>
+          </div>
           {loadError && <p className="pj-error">Gagal memuat data dari server.</p>}
-          {stores.slice(0, 3).map((t, i) => (
-            <StoreCard
-              key={t.id} store={t} now={now} slot={i}
-              wished={!!wish[`store:${t.id}`]}
-              onWish={() => toggleWish("store", t.id)}
-              onOpen={() => openStore(t.id)}
-            />
-          ))}
+          <div className="pj-store-grid">
+            {stores.slice(0, 3).map((t, i) => (
+              <StoreCard
+                key={t.id} store={t} now={now} slot={i}
+                wished={!!wish[`store:${t.id}`]}
+                onWish={() => toggleWish("store", t.id)}
+                onOpen={() => openStore(t.id)}
+              />
+            ))}
+          </div>
         </div>
       </section>
       )}
@@ -280,30 +296,34 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* MENU UNGGULAN */}
       {show("menu") && (
       <section className="pj-sec pj-menu" id="menu">
-        <div className="pj-stage" style={{ height: 1064 }}>
+        <div className="pj-wrap">
           <h2 className="pj-menu-h">{txt(content, "menu_section.heading", "Menu Unggulan")}</h2>
           <p className="pj-menu-sub">{txt(content, "menu_section.subheading", "Pilih paduan rasa favorit untuk anda coba nanti")}</p>
-          {menuPages > 1 && (
-            <>
+          <div className="pj-menu-stage">
+            {menuPages > 1 && (
               <button type="button" className="pj-arrow-sm pj-menu-prev" aria-label="Menu sebelumnya" disabled={mp === 1} onClick={() => setMenuPage(mp - 1)}>
                 <ChevronIcon dir="left" />
               </button>
+            )}
+            <div className="pj-menu-grid">
+              {menuShown.map((m, i) => (
+                <MenuCard
+                  key={m.id} menu={m} slot={i}
+                  wished={!!wish[`menu:${m.id}`]}
+                  onWish={() => toggleWish("menu", m.id)}
+                  onOpen={() => openMenu(m.id)}
+                  onOpenStore={openStore}
+                />
+              ))}
+            </div>
+            {menuPages > 1 && (
               <button type="button" className="pj-arrow-sm pj-menu-next" aria-label="Menu berikutnya" disabled={mp === menuPages} onClick={() => setMenuPage(mp + 1)}>
                 <ChevronIcon dir="right" />
               </button>
-            </>
-          )}
-          {menuShown.map((m, i) => (
-            <MenuCard
-              key={m.id} menu={m} slot={i}
-              wished={!!wish[`menu:${m.id}`]}
-              onWish={() => toggleWish("menu", m.id)}
-              onOpen={() => openMenu(m.id)}
-              onOpenStore={openStore}
-            />
-          ))}
+            )}
+          </div>
           {menuItems.length === 0 && (
-            <p className="pj-empty" style={{ top: 520 }}>Belum ada menu yang dinilai. Jadilah yang pertama memberi ulasan!</p>
+            <p className="pj-empty">Belum ada menu yang dinilai. Jadilah yang pertama memberi ulasan!</p>
           )}
         </div>
       </section>
@@ -312,23 +332,29 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* TENTANG */}
       {show("tentang") && (
       <section className="pj-sec pj-about" id="tentang">
-        <div className="pj-stage" style={{ height: 1010 }}>
-          <div className="pj-pill pj-pill-1" aria-hidden="true" />
-          <div className="pj-pill pj-pill-2" aria-hidden="true" />
-          <div className="pj-blob-dark" aria-hidden="true" />
-          <h2 className="pj-about-h">About Us</h2>
-          <p className="pj-about-p">
-            {txt(content, "about.description", "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.")}
-          </p>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="pj-coconut" src="/design/coconut.png" alt="Buah kelapa dibelah" />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="pj-banana" src="/design/banana.png" alt="Sesisir pisang" />
-          <div className="pj-blob-cream" aria-hidden="true" />
-          <h2 className="pj-hist-h">Sejarah</h2>
-          <p className="pj-hist-p">
-            {txt(content, "history.text", "Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.")}
-          </p>
+        <div className="pj-wrap">
+          <div className="pj-about-row pj-about-top">
+            <div className="pj-pill pj-pill-1" aria-hidden="true" />
+            <div className="pj-blob-dark">
+              <h2 className="pj-about-h">About Us</h2>
+              <p className="pj-about-p">
+                {txt(content, "about.description", "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.")}
+              </p>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="pj-coconut" src="/design/coconut.png" alt="Buah kelapa dibelah" width={491} height={361} />
+          </div>
+          <div className="pj-about-row pj-about-bottom">
+            <div className="pj-pill pj-pill-2" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="pj-banana" src="/design/banana.png" alt="Sesisir pisang" width={486} height={385} />
+            <div className="pj-blob-cream">
+              <h2 className="pj-hist-h">Sejarah</h2>
+              <p className="pj-hist-p">
+                {txt(content, "history.text", "Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.")}
+              </p>
+            </div>
+          </div>
         </div>
       </section>
       )}
@@ -336,33 +362,39 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* TESTIMONI / REVIEW */}
       {show("testimoni") && (
       <section className="pj-sec pj-review" id="testimoni">
-        <div className="pj-stage" style={{ height: 1781 }}>
-          <div className="pj-drip pj-drip-1" aria-hidden="true" />
-          <div className="pj-drip pj-drip-2" aria-hidden="true" />
+        <div className="pj-drip pj-drip-1" aria-hidden="true" />
+        <div className="pj-drip pj-drip-2" aria-hidden="true" />
+        <div className="pj-rl-frame" aria-hidden="true">
           {REVIEW_LETTERS.map((l) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               key={l.n}
-              className="pj-rl"
-              style={{ left: l.left, top: l.top, width: l.w }}
+              className={"pj-rl" + (l.b !== undefined ? " pj-rl-b" : "") + (l.cut ? " pj-rl-cut-" + l.cut : "")}
+              style={{ "--x": l.x, "--w": l.w, ...(l.b !== undefined ? { "--b": l.b } : { "--y": l.y }) } as CSSProperties & Record<`--${string}`, string | number | undefined>}
               src={`/design/review-${l.n}.svg`}
               alt=""
               aria-hidden="true"
             />
           ))}
-          <button type="button" className="pj-write" onClick={openReview}>{txt(content, "testimonial_section.cta", "Tulis Ulasan")}</button>
-          {testiPages > 1 && (
-            <>
+        </div>
+        <div className="pj-wrap">
+          <div className="pj-write-row">
+            <button type="button" className="pj-write" onClick={openReview}>{txt(content, "testimonial_section.cta", "Tulis Ulasan")}</button>
+          </div>
+          <div className="pj-rv-stage">
+            {testiPages > 1 && (
               <button type="button" className="pj-arrow-lg pj-rv-prev" aria-label="Ulasan sebelumnya" disabled={tp === 1} onClick={() => setTestiPage(tp - 1)}>
                 <ChevronIcon dir="left" size={30} width={2.4} />
               </button>
+            )}
+            <div className="pj-rv-grid">
+              {testiItems.map((t, i) => <TestimonialCard key={t.id} t={t} slot={i} />)}
+            </div>
+            {testiPages > 1 && (
               <button type="button" className="pj-arrow-lg pj-rv-next" aria-label="Ulasan berikutnya" disabled={tp === testiPages} onClick={() => setTestiPage(tp + 1)}>
                 <ChevronIcon dir="right" size={30} width={2.4} />
               </button>
-            </>
-          )}
-          <div className="pj-rv-grid">
-            {testiItems.map((t, i) => <TestimonialCard key={t.id} t={t} slot={i} />)}
+            )}
           </div>
         </div>
       </section>
@@ -371,7 +403,7 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* CARI TOKO */}
       {show("cari-toko") && (
       <section className="pj-sec pj-cari" id="cari-toko">
-        <div className="pj-stage" style={{ height: 483 + Math.max(filtered.length, 1) * 321 + 60 }}>
+        <div className="pj-wrap">
           <h2 className="pj-cari-h">{txt(content, "cari_toko.heading", "Cari Toko Es Pisang Ijo")}</h2>
           <p className="pj-cari-sub">{txt(content, "cari_toko.subheading", "Masukkan nama toko atau menu dan area/kota secara manual")}</p>
 
@@ -379,26 +411,34 @@ export default function HomeClient({ only }: { only?: string }) {
             className="pj-filter"
             onSubmit={(e) => { e.preventDefault(); setApplied({ nama: fNama, status: fStatus, sort: fSort }); }}
           >
-            <label htmlFor="filterNama" className="pj-fl-1">Nama Toko / Menu</label>
-            <input type="text" id="filterNama" className="pj-fi-1" placeholder="Nama Toko / Menu" value={fNama} onChange={(e) => setFNama(e.target.value)} />
-            <label htmlFor="filterStatus" className="pj-fl-2">Status Toko</label>
-            <select id="filterStatus" className="pj-fi-2" value={fStatus} onChange={(e) => setFStatus(e.target.value)}>
-              <option>Semua Status</option>
-              <option>Buka</option>
-              <option>Tutup</option>
-            </select>
-            <select id="filterSort" aria-label="Urutkan" className="pj-fi-3" value={fSort} onChange={(e) => setFSort(e.target.value)}>
-              <option>Rating Tertinggi</option>
-              <option>Nama A-Z</option>
-            </select>
+            <div className="pj-field pj-fl-1">
+              <label htmlFor="filterNama">Nama Toko / Menu</label>
+              <input type="text" id="filterNama" className="pj-fi-1" placeholder="Nama Toko / Menu" value={fNama} onChange={(e) => setFNama(e.target.value)} />
+            </div>
+            <div className="pj-field pj-fl-2">
+              <label htmlFor="filterStatus">Status Toko</label>
+              <select id="filterStatus" className="pj-fi-2" value={fStatus} onChange={(e) => setFStatus(e.target.value)}>
+                <option>Semua Status</option>
+                <option>Buka</option>
+                <option>Tutup</option>
+              </select>
+            </div>
+            <div className="pj-field">
+              <select id="filterSort" aria-label="Urutkan" className="pj-fi-3" value={fSort} onChange={(e) => setFSort(e.target.value)}>
+                <option>Rating Tertinggi</option>
+                <option>Nama A-Z</option>
+              </select>
+            </div>
             <button type="submit" className="pj-fbtn">Cari</button>
           </form>
 
           <p className="pj-count"><span>{filtered.length}</span> Toko Ditemukan</p>
 
-          {filtered.map((t, i) => (
-            <StoreResult key={t.id} store={t} now={now} index={i} onOpen={() => openStore(t.id)} />
-          ))}
+          <div className="pj-rows">
+            {filtered.map((t, i) => (
+              <StoreResult key={t.id} store={t} now={now} index={i} onOpen={() => openStore(t.id)} />
+            ))}
+          </div>
         </div>
       </section>
       )}
@@ -406,8 +446,8 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* FAQ */}
       {show("faq") && (
       <section className="pj-sec pj-faq" id="faq">
-        <div className="pj-stage">
-          <svg className="pj-cloud" width="1440" height="560" viewBox="0 0 1440 560" aria-hidden="true">
+        <div className="pj-faq-bg" aria-hidden="true">
+          <svg className="pj-cloud" viewBox="0 0 1440 560" preserveAspectRatio="xMidYMin meet">
             <g fill="#FFF9EC">
               <ellipse cx="660" cy="330" rx="275" ry="150" />
               <ellipse cx="830" cy="250" rx="215" ry="140" />
@@ -417,21 +457,26 @@ export default function HomeClient({ only }: { only?: string }) {
               <circle cx="1210" cy="232" r="52" /><circle cx="1292" cy="226" r="44" /><circle cx="1262" cy="262" r="42" />
             </g>
           </svg>
-          <h2 className="pj-faq-h">You Asked<br />We Answered</h2>
-          <div className="pj-qo" style={{ left: 0, top: 700, opacity: 0.85 }} aria-hidden="true">QUESTION</div>
-          <div className="pj-qo" style={{ left: -130, top: 1095, opacity: 0.7 }} aria-hidden="true">QUESTION</div>
-          <div className="pj-qo" style={{ left: -260, top: 1490, opacity: 0.55 }} aria-hidden="true">QUESTION</div>
-          <div className="pj-qo" style={{ left: -390, top: 1885, opacity: 0.25 }} aria-hidden="true">QUESTION</div>
-          <FaqAccordion faqs={faqs} />
-          <svg className="pj-wave" width="1440" height="420" viewBox="0 2000 1440 420" preserveAspectRatio="none" aria-hidden="true">
-            
-            <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2262 L-30 2262 Z" fill="#E0DECF" />
-            
-            <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2000 L-30 2000 Z" fill="#70826A" />
-
-            <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111" fill="none" stroke="#17381B" strokeWidth="72" strokeLinecap="round" />
-          </svg>
+          {/* Watermark QUESTION: teks diulang & dibuat selebar jendela; baris ekstra (pj-qo-x) hanya tampil di layar sangat lebar */}
+          {FAQ_WATERMARK.map((w, i) => (
+            <div
+              key={i}
+              className={"pj-qo" + (w.extra ? " pj-qo-x" : "")}
+              style={{ left: `${w.left}%`, top: `${w.top}%`, opacity: w.opacity }}
+            >
+              {"QUESTION ".repeat(5)}
+            </div>
+          ))}
         </div>
+        <div className="pj-wrap">
+          <h2 className="pj-faq-h">You Asked<br />We Answered</h2>
+          <FaqAccordion faqs={faqs} />
+        </div>
+        <svg className="pj-wave" viewBox="0 2000 1440 420" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2262 L-30 2262 Z" fill="#E0DECF" />
+          <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2000 L-30 2000 Z" fill="#70826A" />
+          <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111" fill="none" stroke="#17381B" strokeWidth="72" strokeLinecap="round" />
+        </svg>
       </section>
       )}
 
@@ -439,22 +484,23 @@ export default function HomeClient({ only }: { only?: string }) {
       {/* KONTAK */}
       {show("kontak") && (
       <section className={cls("pj-sec pj-contact")} id="kontak">
-        <div className="pj-stage" style={{ height: only ? 1310 : 790 }}>
-          {/* bentuk kartu, footer, dan kotak hijau: vector asli Figma (public/design/contact-*.svg) */}
-          {/* eslint-disable @next/next/no-img-element */}
-          <img className="pj-cs pj-c-card" src="/design/contact-card.svg" alt="" aria-hidden="true" />
-          <img className="pj-cs pj-c-foot" src="/design/contact-footer.svg" alt="" aria-hidden="true" />
-          <img className="pj-cs pj-c-sql" src="/design/contact-sq-left.svg" alt="" aria-hidden="true" />
-          <img className="pj-cs pj-c-sqr" src="/design/contact-sq-right.svg" alt="" aria-hidden="true" />
-          {/* eslint-enable @next/next/no-img-element */}
+        <div className="pj-c-card" aria-hidden="true" />
+        {/* eslint-disable @next/next/no-img-element */}
+        <img className="pj-cs pj-c-sql" src="/design/contact-sq-left.svg" alt="" aria-hidden="true" />
+        <img className="pj-cs pj-c-sqr" src="/design/contact-sq-right.svg" alt="" aria-hidden="true" />
+        {/* eslint-enable @next/next/no-img-element */}
+        {only && <div className="pj-c-foot" aria-hidden="true" />}
+        <div className="pj-wrap pj-contact-in">
           <h2 className="pj-contact-h">Contact</h2>
           <p className="pj-contact-sub">{txt(content, "contact.heading", "Mari ngobrol tentang rasa favoritmu")}</p>
-          <p className="pj-contact-k">Email<br />WhatsApp CS</p>
-          <p className="pj-contact-v">
-            : {txt(content, "contact.email", "halo@pisangijo.com")}
-            <br />
-            : {txt(content, "contact.whatsapp", "+62 700 0000 0000")}
-          </p>
+          <div className="pj-contact-info">
+            <p className="pj-contact-k">Email<br />WhatsApp CS</p>
+            <p className="pj-contact-v">
+              : {txt(content, "contact.email", "halo@pisangijo.com")}
+              <br />
+              : {txt(content, "contact.whatsapp", "+62 700 0000 0000")}
+            </p>
+          </div>
         </div>
       </section>
       )}

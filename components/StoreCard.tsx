@@ -48,7 +48,7 @@ export function StoreResult({
   const hasImg = imageList(store.image_url).length > 0;
   const flip = index % 2 === 1;
   return (
-    <div className={"pj-row" + (flip ? " flip" : "")} style={{ top: 483 + index * 321 }} onClick={onOpen}>
+    <div className={"pj-row" + (flip ? " flip" : "")} onClick={onOpen}>
       <div className="pj-row-img">
         {hasImg ? <ImageSlideshow value={store.image_url} alt={store.nama} /> : <span>Gambar</span>}
       </div>
