@@ -1,9 +1,32 @@
 import { makeCrud } from "@/lib/adminCrud";
 import { normalizeMapsUrl, MAPS_URL_ERROR } from "@/lib/maps";
+import prisma from "@/lib/prisma";
+
+// Rating & jumlah ulasan di situs utama dihitung dari ulasan yang sudah disetujui
+// (lihat /api/site-content). Admin memakai perhitungan yang sama supaya angkanya sama.
+async function withReviewStats<T extends { id: number }>(rows: T[], type: "store" | "menu") {
+  const reviews = await prisma.testimonial.findMany({
+    where: { target_type: type, approved: 1 },
+    select: { target_id: true, stars: true },
+  });
+  const agg = new Map<number, { sum: number; n: number }>();
+  reviews.forEach((r) => {
+    if (r.target_id == null) return;
+    const a = agg.get(r.target_id) || { sum: 0, n: 0 };
+    a.sum += r.stars;
+    a.n += 1;
+    agg.set(r.target_id, a);
+  });
+  return rows.map((row) => {
+    const a = agg.get(row.id);
+    return { ...row, rating: a ? Math.round((a.sum / a.n) * 10) / 10 : 0, ulasan_count: a ? a.n : 0 };
+  });
+}
 
 export const stores = makeCrud({
   model: "store",
   requiredField: "nama",
+  decorate: (rows) => withReviewStats(rows, "store"),
   fields: [
     { name: "nama", type: "string", default: "" },
     { name: "alamat", type: "string", default: "" },
@@ -17,8 +40,6 @@ export const stores = makeCrud({
     },
     { name: "jam_buka", type: "string", default: "" },
     { name: "jam_tutup", type: "string", default: "" },
-    { name: "rating", type: "float", default: 0 },
-    { name: "ulasan_count", type: "int", default: 0 },
     { name: "sort_order", type: "int", default: 0 },
     { name: "image_url", type: "string", default: "" },
     { name: "approval_status", type: "string", default: "approved" },
@@ -41,6 +62,7 @@ export const stores = makeCrud({
 export const menu = makeCrud({
   model: "menuItem",
   requiredField: "nama",
+  decorate: (rows) => withReviewStats(rows, "menu"),
   fields: [
     { name: "nama", type: "string", default: "" },
     { name: "deskripsi", type: "string", default: "" },
