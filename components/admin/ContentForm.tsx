@@ -4,113 +4,7 @@ import { useEffect, useState } from "react";
 import { CONTENT, parseImageList } from "@/lib/adminConfig";
 import FieldInput from "@/components/admin/FieldInput";
 import { SkeletonForm } from "@/components/admin/Skeleton";
-
-function renderPreview(key: string, d: Record<string, unknown>, images: string[]) {
-  const s = (k: string) => String(d[k] ?? "");
-  switch (key) {
-    case "hero":
-      return (
-        <>
-          {s("badge") && <span className="pv-badge">{s("badge")}</span>}
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p className="pv-sub">{s("subheading")}</p>
-          <div className="pv-search">{s("search_placeholder")}</div>
-          <div className="pv-actions">
-            {s("cta_primary") && <span className="pv-btn pv-btn-mustard">{s("cta_primary")}</span>}
-            {s("cta_secondary") && <span className="pv-btn pv-btn-outline">{s("cta_secondary")}</span>}
-          </div>
-        </>
-      );
-    case "toko_populer":
-      return (
-        <>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p className="pv-sub">{s("subheading")}</p>
-          <span className="pv-link">{s("link_text")} →</span>
-        </>
-      );
-    case "menu_section":
-    case "history":
-      return (
-        <>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p className="pv-sub">{s("subheading") || s("text")}</p>
-        </>
-      );
-    case "about":
-      return (
-        <>
-          {images[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="pv-img" src={images[0]} alt="" />
-          ) : (
-            <div className="pv-img-placeholder">{s("media_text") || "Belum ada gambar"}</div>
-          )}
-          <span className="pv-eyebrow">{s("eyebrow")}</span>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p className="pv-sub">{s("description")}</p>
-          <div className="pv-pill-row">
-            {["pill_1", "pill_2", "pill_3"].map((p) => s(p) && <span key={p} className="pv-pill">{s(p)}</span>)}
-          </div>
-        </>
-      );
-    case "testimonial_section":
-      return (
-        <>
-          <span className="pv-eyebrow">{s("eyebrow")}</span>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <div className="pv-actions"><span className="pv-btn pv-btn-mustard">{s("cta")}</span></div>
-        </>
-      );
-    case "cari_toko":
-      return (
-        <div className="pv-dark-box">
-          <span className="pv-eyebrow mustard">{s("eyebrow")}</span>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p>{s("subheading")}</p>
-        </div>
-      );
-    case "faq_section":
-      return (
-        <>
-          <span className="pv-eyebrow">{s("eyebrow")}</span>
-          <h4 className="pv-heading">{s("heading")}</h4>
-        </>
-      );
-    case "contact":
-      return (
-        <>
-          <span className="pv-eyebrow">{s("eyebrow")}</span>
-          <h4 className="pv-heading">{s("heading")}</h4>
-          <p className="pv-sub">{s("note")}</p>
-          <div className="pv-card">
-            <p>Email: {s("email")}</p>
-            <p>WhatsApp: {s("whatsapp")}</p>
-            <p>Jam layanan: {s("hours")}</p>
-          </div>
-        </>
-      );
-    case "footer":
-      return (
-        <div className="pv-footer-mock">
-          <strong>{s("tagline")}</strong>
-          {s("social_text")}<br />
-          {s("help_email")} · {s("help_whatsapp")}<br />
-          {s("legal_terms_label")} · {s("legal_privacy_label")}<br />
-          {s("copyright")}
-        </div>
-      );
-    case "site":
-      return (
-        <>
-          <div className="pv-browser-tab"><span className="dot" />{s("site_title") || "Judul tab"}</div>
-          <h4 className="pv-heading" style={{ marginTop: 12 }}>{s("logo_text")}</h4>
-        </>
-      );
-    default:
-      return <p className="pv-empty">Belum ada preview.</p>;
-  }
-}
+import SitePreview, { CONTENT_TARGET } from "@/components/admin/SitePreview";
 
 export default function ContentForm({ contentKey, onAuthFail }: { contentKey: string; onAuthFail: () => void }) {
   const cfg = CONTENT[contentKey];
@@ -165,9 +59,9 @@ export default function ContentForm({ contentKey, onAuthFail }: { contentKey: st
       </form>
 
       <aside className="preview-pane">
-        <div className="preview-pane-label">Live Preview</div>
-        <div className="preview-surface">
-          {renderPreview(contentKey, data, parseImageList(data.images))}
+        <div className="preview-pane-label">Live Preview · tampilan situs</div>
+        <div className="preview-surface preview-live">
+          <SitePreview target={CONTENT_TARGET[contentKey] || "beranda"} content={{ key: contentKey, data }} />
         </div>
       </aside>
     </div>

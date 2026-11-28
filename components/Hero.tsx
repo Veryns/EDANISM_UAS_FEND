@@ -10,8 +10,8 @@ export default function Hero({ content, onSearch }: { content: Content; onSearch
     <section className="pj-sec pj-hero" id="beranda">
       <div className="pj-stage" style={{ height: 1085 }}>
         <div className="pj-hero-wave" aria-hidden="true" />
-        <span className="pj-badge">Kuliner Makassar</span>
-        <h1 className="pj-h1">Temukan Es Pisang Ijo Favorit Kamu</h1>
+        <span className="pj-badge">{txt(content, "hero.badge", "Kuliner Makassar")}</span>
+        <h1 className="pj-h1">{txt(content, "hero.heading", "Temukan Es Pisang Ijo Favorit Kamu")}</h1>
         <p className="pj-hero-sub">{txt(content, "hero.subheading", "Jelajahi pilihan es pisang ijo dan temukan menu kesukaanmu")}</p>
 
         <form className="pj-hero-search" onSubmit={(e) => { e.preventDefault(); onSearch(q.trim()); }}>
@@ -25,8 +25,8 @@ export default function Hero({ content, onSearch }: { content: Content; onSearch
           <button type="submit">Cari</button>
         </form>
 
-        <Link href="/cari-toko" className="pj-hero-btn pj-hero-btn-1">Cari toko</Link>
-        <Link href="/menu" className="pj-hero-btn pj-hero-btn-2">Lihat menu</Link>
+        <Link href="/cari-toko" className="pj-hero-btn pj-hero-btn-1">{txt(content, "hero.cta_primary", "Cari toko")}</Link>
+        <Link href="/menu" className="pj-hero-btn pj-hero-btn-2">{txt(content, "hero.cta_secondary", "Lihat menu")}</Link>
 
         <div className="pj-hero-circle" aria-hidden="true" />
         {/* eslint-disable-next-line @next/next/no-img-element */}

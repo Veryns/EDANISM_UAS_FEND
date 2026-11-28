@@ -24,7 +24,7 @@ export const CONTENT: Record<string, { title: string; fields: FieldDef[] }> = {
   hero: {
     title: "Hero Section",
     fields: [
-      t("badge", "Badge"), t("heading", "Heading"), ta("subheading", "Subheading"),
+      t("badge", "Badge (label kecil di atas judul)"), t("heading", "Heading"), ta("subheading", "Subheading"),
       t("search_placeholder", "Search Placeholder"), t("cta_primary", "Primary Button"), t("cta_secondary", "Secondary Button"),
     ],
   },
@@ -38,12 +38,7 @@ export const CONTENT: Record<string, { title: string; fields: FieldDef[] }> = {
   },
   about: {
     title: "About Section",
-    fields: [
-      t("eyebrow", "Eyebrow Label"), t("heading", "Heading"), ta("description", "Description"),
-      t("media_text", "Placeholder Text (tanpa gambar)"),
-      { name: "images", label: "Gambar (pilih satu atau lebih)", type: "image" },
-      t("pill_1", "Pill 1"), t("pill_2", "Pill 2"), t("pill_3", "Pill 3"),
-    ],
+    fields: [t("heading", "Heading"), ta("description", "Description")],
   },
   history: {
     title: "History Section",
@@ -51,27 +46,24 @@ export const CONTENT: Record<string, { title: string; fields: FieldDef[] }> = {
   },
   testimonial_section: {
     title: "Reviews Section",
-    fields: [t("eyebrow", "Eyebrow Label"), t("heading", "Heading"), t("cta", "Review Button Label")],
+    fields: [t("cta", "Review Button Label")],
   },
   cari_toko: {
     title: "Store Search Section",
-    fields: [t("eyebrow", "Eyebrow Label"), t("heading", "Heading"), ta("subheading", "Subheading")],
+    fields: [t("heading", "Heading"), ta("subheading", "Subheading")],
   },
   faq_section: {
     title: "FAQ Section",
-    fields: [t("eyebrow", "Eyebrow Label"), t("heading", "Heading")],
+    fields: [ta("heading", "Heading (Enter = baris baru)")],
   },
   contact: {
     title: "Contact Section",
-    fields: [
-      t("eyebrow", "Eyebrow Label"), t("heading", "Heading"), ta("note", "Note"),
-      t("email", "Email"), t("whatsapp", "WhatsApp"), t("hours", "Service Hours"),
-    ],
+    fields: [t("eyebrow", "Title"), t("heading", "Subtitle"), t("email", "Email"), t("whatsapp", "WhatsApp")],
   },
   footer: {
     title: "Footer",
     fields: [
-      t("tagline", "Tagline"), t("social_text", "Social Text"), t("help_email", "Help Email"),
+      ta("tagline", "Tagline"), t("help_email", "Help Email"),
       t("help_whatsapp", "Help WhatsApp"), t("legal_terms_label", "Terms Label"),
       t("legal_privacy_label", "Privacy Label"), t("copyright", "Copyright"),
     ],
@@ -86,14 +78,14 @@ export const LISTS: Record<string, ListConfig> = {
   stores: {
     title: "Toko",
     endpoint: "stores",
-    columns: ["image_url", "nama", "alamat", "jam_buka", "status", "approval_status", "rating", "ulasan_count"],
+    columns: ["image_url", "nama", "alamat", "jam_buka", "status", "approval_status", "rating", "ulasan_count", "sort_order"],
     fields: [
       { name: "nama", label: "Nama Toko", type: "text", required: true },
       { name: "alamat", label: "Alamat", type: "text" },
       { name: "maps_url", label: "Link Google Maps (opsional)", type: "text" },
       { name: "jam_buka", label: "Jam Buka", type: "time", required: true },
       { name: "jam_tutup", label: "Jam Tutup", type: "time", required: true },
-      { name: "rating", label: "Rating", type: "number", step: "0.1", min: "0", max: "5" },
+      { name: "sort_order", label: "Urutan tampil (kecil = lebih dulu, 3 teratas jadi Toko Populer)", type: "number", min: "0" },
       { name: "image_url", label: "Gambar Toko (pilih satu atau lebih)", type: "image" },
       {
         name: "approval_status", label: "Status Approval", type: "select",
@@ -105,24 +97,26 @@ export const LISTS: Record<string, ListConfig> = {
   menu: {
     title: "Menu",
     endpoint: "menu",
-    columns: ["image_url", "nama", "deskripsi", "harga", "store_id"],
+    columns: ["image_url", "nama", "deskripsi", "harga", "store_id", "rating", "ulasan_count"],
     fields: [
       { name: "nama", label: "Nama Menu", type: "text", required: true },
       { name: "deskripsi", label: "Deskripsi", type: "text" },
       { name: "harga", label: "Harga (contoh: Rp 15.000)", type: "text" },
       { name: "image_url", label: "Gambar Menu (pilih satu atau lebih)", type: "image" },
       { name: "store_id", label: "Toko", type: "store-select" },
+      { name: "sort_order", label: "Urutan (dipakai jika rating sama)", type: "number", min: "0" },
     ],
   },
   testimonials: {
     title: "Testimoni",
     endpoint: "testimonials",
-    columns: ["nama", "ulasan", "waktu", "stars", "approved"],
+    columns: ["nama", "target_nama", "ulasan", "waktu", "stars", "approved"],
     fields: [
       { name: "nama", label: "Nama", type: "text", required: true },
       { name: "ulasan", label: "Ulasan", type: "textarea" },
       { name: "waktu", label: "Keterangan Waktu (contoh: 2 hari yang lalu)", type: "text" },
       { name: "stars", label: "Jumlah Bintang (1-5)", type: "number", min: "1", max: "5" },
+      { name: "sort_order", label: "Urutan tampil (kecil = lebih dulu)", type: "number", min: "0" },
       {
         name: "approved", label: "Status Approval", type: "select",
         options: ["0", "1"], optionLabels: { "0": "Menunggu Approval", "1": "Disetujui" },
@@ -132,10 +126,11 @@ export const LISTS: Record<string, ListConfig> = {
   faqs: {
     title: "Pertanyaan",
     endpoint: "faqs",
-    columns: ["question", "answer"],
+    columns: ["question", "answer", "sort_order"],
     fields: [
       { name: "question", label: "Pertanyaan", type: "text", required: true },
       { name: "answer", label: "Jawaban", type: "textarea" },
+      { name: "sort_order", label: "Urutan tampil (kecil = lebih dulu)", type: "number", min: "0" },
     ],
   },
 };

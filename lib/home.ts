@@ -19,6 +19,7 @@ export type MenuItem = {
   store_alamat?: string;
   rating?: number;
   ulasan_count?: number;
+  preview?: boolean; // hanya dipakai live preview admin
 };
 export type Testimonial = {
   id: number;

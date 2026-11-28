@@ -18,7 +18,7 @@ export default function WishlistClient() {
 
   useEffect(() => {
     document.title = "List yang Pengen Kamu Coba | Es Pisang Ijo";
-    fetch("/api/site-content")
+    fetch("/api/site-content", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setContent(d.content || {}))
       .catch(() => {});
