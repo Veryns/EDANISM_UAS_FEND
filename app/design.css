@@ -454,3 +454,20 @@ html{scroll-behavior:smooth;}
   line-height:34px !important;
   top:65px !important;
 }
+
+/* animasi FAQ */
+.pj-faq .pj-q{transition:transform .2s ease, box-shadow .2s ease;}
+.pj-faq .pj-q:hover{
+  transform:translateY(-5px) scale(1.02);
+  box-shadow:4px 16px 18px rgba(0,0,0,.3);
+}
+.pj-faq .pj-q:active{transform:scale(.98);}
+
+.pj-faq .pj-a{
+  transform-origin:100% 0;
+  animation:pj-bubble .35s ease both;
+}
+@keyframes pj-bubble{
+  from{opacity:0;transform:translateY(-18px) scale(.9);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
