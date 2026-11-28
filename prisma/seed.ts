@@ -23,13 +23,21 @@ const blocks: Record<string, unknown> = {
   about: {
     heading: "Tentang Platform",
     description:
-      "Pisang Ijo Kita adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.",
+      "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.",
+    media_text: "Ceritanya Gambar Bahan Bahan Pisang Ijo",
+    images: [],
+    image_url: "",
+    pill_1: "Pisang Segar Pilihan",
+    pill_2: "Santan Lembut",
+    pill_3: "Layanan Penuh Perhatian",
   },
   history: {
     heading: "Sejarah",
     text: "Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.",
   },
   testimonial_section: {
+    eyebrow: "Kata Mereka #MerekaBicara",
+    heading: "Testimoni Pelanggan",
     cta: "Tulis Ulasan",
   },
   cari_toko: {
@@ -42,7 +50,7 @@ const blocks: Record<string, unknown> = {
   contact: {
     eyebrow: "Contact",
     heading: "Mari ngobrol tentang rasa favoritmu",
-    email: "halo@pisangijokita.com",
+    email: "halo@pisangijo.com",
     whatsapp: "+62 700 0000 0000",
   },
   footer: {
