@@ -130,20 +130,27 @@ html,body{overflow-x:clip;}
 .pj-drip{left:0;width:1440px;height:1680px;}
 .pj-drip-1{top:101px;background:url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 viewBox=%220 0 1920 2240%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath d=%22M-10.5745 1923.82C74.2875 2038.61 149.971 1985.7 222.121 1862.16C334.157 1643.38 433.385 1746.29 529.267 1933.3C601.048 2067.38 689.918 2033.27 785.478 1933.3C858.301 1871.43 915.449 1934.67 956.652 2021.05C1041.72 2165.72 1165.15 2100.75 1223.82 1987.85C1259.6 1911.59 1306.35 1950.67 1341.12 2042.39C1512.51 2351.17 1672.38 2286.79 1768.65 1923.82C1828.13 1786.97 1879.74 1797.63 1923.88 1862.16V0H-10.5745%22 fill=%22%2317381B%22/%3E %3C/svg%3E") 0 0/100% 100% no-repeat;}
 .pj-drip-2{top:0;background:url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 viewBox=%220 0 1920 2240%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath d=%22M0 1923.82C84.228 2038.62 159.346 1985.7 230.957 1862.16C342.156 1643.38 440.644 1746.29 535.809 1933.3C607.054 2067.38 695.259 2033.27 790.106 1933.3C862.385 1871.43 919.106 1934.67 960 2021.05C1044.43 2165.72 1166.95 2100.75 1225.17 1987.85C1260.68 1911.59 1307.08 1950.67 1341.6 2042.39C1511.71 2351.17 1670.39 2286.79 1765.94 1923.82C1824.97 1786.97 1876.19 1797.63 1920 1862.16V0H0%22 fill=%22%232B401F%22/%3E %3C/svg%3E") 0 0/100% 100% no-repeat;}
-/* huruf vector "review" (public/design/review-*.svg), posisi diatur lewat style di HomeClient */
-.pj-rl{position:absolute;max-width:none;height:auto;pointer-events:none;user-select:none;}
-.pj-write{left:1005px;top:504px;width:308px;height:87px;border:11px solid #B8A39B;border-radius:44px;background:#6F8065;color:#FFFAEB;font-family:var(--pj-slab);font-size:30px;line-height:65px;padding:0;text-align:center;}
-.pj-arrow-lg{top:757px;width:67px;height:67px;padding:0;border:0;border-radius:50%;background:#B8A39B;display:flex;align-items:center;justify-content:center;}
+/* huruf vector "review" (public/design/review-*.svg), posisi diatur lewat style di HomeClient; transparan */
+.pj-rl{position:absolute;max-width:none;height:auto;pointer-events:none;user-select:none;opacity:.55;}
+
+/* tombol Tulis Ulasan: pil krem, teks hijau tua, tanpa border */
+.pj-write{left:1019px;top:510px;width:288px;height:69px;border:0;border-radius:35px;background:#FFFAEB;color:#2B401F;font-family:var(--pj-slab);font-size:30px;font-weight:700;line-height:69px;padding:0;text-align:center;}
+
+/* panah: lingkaran krem, border tan, chevron hijau tua */
+.pj-arrow-lg{top:750px;width:68px;height:68px;padding:0;border:5px solid #B8A39B;border-radius:50%;background:#FFFAEB;color:#17381B;display:flex;align-items:center;justify-content:center;}
+.pj-arrow-lg svg{stroke:#17381B;}
 .pj-arrow-lg:disabled{opacity:.4;cursor:not-allowed;}
-.pj-rv-prev{left:54px;}.pj-rv-next{left:1338px;}
-.pj-rv{top:647px;width:558px;height:291px;border:11px solid #B8A39B;border-radius:64px;background:#6F8065;color:#FFFAEB;font-family:var(--pj-slab);}
-.pj-rv-0{left:148px;}.pj-rv-1{left:750px;}
-.pj-rv-stars{position:absolute;left:27px;top:18px;font-family:var(--pj-body);font-size:22px;line-height:28px;letter-spacing:3px;}
-.pj-rv-name{position:absolute;left:36px;top:57px;font-size:20px;line-height:28px;}
-.pj-rv-pill{position:absolute;left:10px;right:10px;top:96px;height:42px;padding:0 21px;border-radius:21px;background:#17381B;font-size:15px;line-height:42px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pj-rv-text{position:absolute;left:36px;right:30px;top:154px;font-size:15.5px;line-height:22px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.pj-rv-text.nopill{top:104px;}
-.pj-rv-when{position:absolute;left:22px;bottom:14px;font-family:var(--pj-body);font-size:12px;line-height:16px;}
+.pj-rv-prev{left:54px;}.pj-rv-next{left:1340px;}
+
+/* kartu ulasan: krem polos, teks hijau tua */
+.pj-rv{top:647px;width:551px;height:284px;border:0;border-radius:60px;background:#FFFAEB;color:#17381B;font-family:var(--pj-slab);}
+.pj-rv-0{left:151px;}.pj-rv-1{left:756px;}
+.pj-rv-stars{position:absolute;left:35px;top:23px;font-family:var(--pj-body);font-size:26px;line-height:30px;letter-spacing:2px;color:#17381B;}
+.pj-rv-name{position:absolute;left:72px;top:73px;font-size:22px;font-weight:700;line-height:30px;}
+.pj-rv-pill{position:absolute;left:27px;right:30px;top:117px;height:45px;padding:0 21px;border-radius:23px;background:#17381B;color:#FFFAEB;font-size:19.5px;line-height:45px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pj-rv-text{position:absolute;left:50px;right:36px;top:180px;font-size:18px;line-height:25px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.pj-rv-text.nopill{left:36px;top:118px;font-size:21px;line-height:30px;-webkit-line-clamp:4;}
+.pj-rv-when{position:absolute;left:34px;bottom:12px;font-family:var(--pj-body);font-size:12.5px;font-weight:700;line-height:16px;}
 
 /* ---------- Cari Toko ---------- */
 .pj-cari{background:#FFFAEB;}
@@ -222,14 +229,13 @@ html,body{overflow-x:clip;}
 .pj-sec .image-slideshow{position:relative;}
 
 /* review 2 kolom x 3 baris */
-.pj-stage > .pj-rv-grid{position:absolute;left:148px;top:647px;width:1160px;display:grid;grid-template-columns:558px 558px;gap:40px 44px;}
+.pj-stage > .pj-rv-grid{position:absolute;left:151px;top:647px;width:1156px;display:grid;grid-template-columns:551px 551px;gap:40px 54px;}
 .pj-stage .pj-rv-grid > *{position:relative !important;left:auto !important;top:auto !important;margin:0;}
-.pj-review .pj-arrow-lg{top:1090px;}
 
 /* naikkan isi review */
 .pj-review .pj-write{top:170px;}
 .pj-review .pj-stage > .pj-rv-grid{top:300px;}
-.pj-review .pj-arrow-lg{top:743px;}
+.pj-review .pj-arrow-lg{top:408px;}
 
 /* warna kartu cari toko: sage pastel */
 .pj-cari .pj-row-info{background:#E3E9DF;}
@@ -415,23 +421,29 @@ html{scroll-behavior:smooth;}
 .pj-cari .pj-row-status{top:184px;}
 .pj-cari .pj-row-rate{top:222px;}
 
-/* huruf besar "review": transparan */
-.pj-rl{opacity:.55;mix-blend-mode:normal;}
+/* hover: tombol Tulis Ulasan membesar */
+.pj-write{
+  transition:transform .25s ease;
+  will-change:transform;
+}
+.pj-write:hover{
+  transform:scale(1.08);
+}
+.pj-write:active{
+  transform:scale(.97);
+}
 
-/* huruf review */
-.pj-rl{opacity:.55;}
+@media (prefers-reduced-motion:reduce){
+  .pj-write{transition:none;}
+  .pj-write:hover{transform:none;}
+}
 
-/* kartu review: krem, tanpa border */
-.pj-rv{background:#FFF9EC;border:0;border-radius:56px;color:#17381B;}
-.pj-rv-stars{color:#17381B;}
-.pj-rv-name{color:#17381B;font-size:15px;font-weight:700;}
-.pj-rv-pill{background:#17381B;color:#FFF9EC;}
-.pj-rv-text,.pj-rv-when{color:#17381B;}
-
-/* tombol Tulis Ulasan */
-.pj-write{background:#FFF9EC;border:0;color:#2F4321;width:286px;height:68px;border-radius:34px;line-height:68px;left:1019px;}
-
-/* panah: lingkaran krem, di tengah tinggi kartu */
-.pj-arrow-lg{background:#FFF9EC;border:5px solid #B8A39B;color:#17381B;}
-.pj-arrow-lg svg{stroke:#17381B;}
-.pj-review .pj-arrow-lg{top:412px;}
+/* nama sejajar dengan komentar */
+.pj-review .pj-rv .pj-rv-name,
+.pj-review .pj-rv .pj-rv-text{
+  left:36px !important;
+  margin-left:0 !important;
+  padding-left:0 !important;
+  text-indent:0 !important;
+  text-align:left !important;
+}
