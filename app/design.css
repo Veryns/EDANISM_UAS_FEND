@@ -447,3 +447,10 @@ html{scroll-behavior:smooth;}
   text-indent:0 !important;
   text-align:left !important;
 }
+
+/* nama review lebih besar */
+.pj-review .pj-rv .pj-rv-name{
+  font-size:26px !important;
+  line-height:34px !important;
+  top:65px !important;
+}
