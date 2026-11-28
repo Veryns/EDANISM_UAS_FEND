@@ -21,7 +21,7 @@ const blocks: Record<string, unknown> = {
     subheading: "Pilih paduan rasa favorit untuk anda coba nanti",
   },
   about: {
-    heading: "Tentang Platform",
+    heading: "About Us",
     description:
       "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.",
     media_text: "Ceritanya Gambar Bahan Bahan Pisang Ijo",
