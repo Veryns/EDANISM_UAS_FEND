@@ -391,3 +391,47 @@ html{scroll-behavior:smooth;}
 .pj-toko-link:hover{transform:scale(1.15);text-shadow:0 2px 8px rgba(0,0,0,.35);}
 .pj-toko-link:hover::after{transform:scaleX(1);}
 .pj-toko-link:active{transform:scale(.97);}
+
+/* ===== Cari Toko: kartu hanya garis tipis, seperti desain ===== */
+.pj-cari .pj-row-img{background:transparent;border:1px solid #17381B;color:#17381B;}
+.pj-cari .pj-row-info{background:transparent;border:1px solid #17381B;}
+.pj-cari .pj-row-info h3{color:#17381B;}
+.pj-cari .pj-row-hours{color:#17381B;}
+.pj-cari .pj-row-status.open{background:transparent;color:#2E6B3A;}
+.pj-cari .pj-row-status.closed{background:transparent;color:#B3261E;}
+.pj-cari .pj-row-rate{color:#17381B;}
+.pj-cari .pj-row-rate span{color:#1F5A2E;}
+
+/* panah kecil di kotak gambar */
+.pj-cari .pj-row-img .image-slide-arrow{width:30px;height:30px;border:1px solid #17381B;background:#FFF9EC;color:#17381B;border-radius:50%;box-shadow:none;font-size:16px;}
+
+/* Cari Toko: semua baris gambar kiri + info kanan, rata tengah */
+.pj-cari .pj-row-img,
+.pj-cari .pj-row.flip .pj-row-img{left:240px;width:419px;height:290px;}
+.pj-cari .pj-row-info,
+.pj-cari .pj-row.flip .pj-row-info{left:692px;width:508px;height:290px;top:0;padding:28px 30px 0 52px;}
+.pj-cari .pj-row-hours,.pj-cari .pj-row-status,.pj-cari .pj-row-rate,
+.pj-cari .pj-row.flip .pj-row-hours,.pj-cari .pj-row.flip .pj-row-status,.pj-cari .pj-row.flip .pj-row-rate{left:52px;}
+.pj-cari .pj-row-status{top:184px;}
+.pj-cari .pj-row-rate{top:222px;}
+
+/* huruf besar "review": transparan */
+.pj-rl{opacity:.55;mix-blend-mode:normal;}
+
+/* huruf review */
+.pj-rl{opacity:.55;}
+
+/* kartu review: krem, tanpa border */
+.pj-rv{background:#FFF9EC;border:0;border-radius:56px;color:#17381B;}
+.pj-rv-stars{color:#17381B;}
+.pj-rv-name{color:#17381B;font-size:15px;font-weight:700;}
+.pj-rv-pill{background:#17381B;color:#FFF9EC;}
+.pj-rv-text,.pj-rv-when{color:#17381B;}
+
+/* tombol Tulis Ulasan */
+.pj-write{background:#FFF9EC;border:0;color:#2F4321;width:286px;height:68px;border-radius:34px;line-height:68px;left:1019px;}
+
+/* panah: lingkaran krem, di tengah tinggi kartu */
+.pj-arrow-lg{background:#FFF9EC;border:5px solid #B8A39B;color:#17381B;}
+.pj-arrow-lg svg{stroke:#17381B;}
+.pj-review .pj-arrow-lg{top:412px;}

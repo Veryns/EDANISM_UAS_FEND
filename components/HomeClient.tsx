@@ -30,12 +30,12 @@ const TESTI_PAGE_SIZE = 6;
 // Huruf vector "review" dari Figma (file ada di public/design/review-*.svg).
 // Posisi & lebar dalam koordinat stage 1440px.
 const REVIEW_LETTERS = [
-  { n: "r", left: 0, top: 256, w: 350 },
-  { n: "e1", left: 388, top: 283, w: 575 },
-  { n: "v", left: 932, top: 215, w: 509 },
-  { n: "i", left: 44, top: 949, w: 438 },
-  { n: "e2", left: 376, top: 910, w: 592 },
-  { n: "w", left: 806, top: 985, w: 634 },
+  { n: "r", left: 0, top: 236, w: 350 },
+  { n: "e1", left: 388, top: 284, w: 575 },
+  { n: "v", left: 932, top: 280, w: 509 },
+  { n: "i", left: 34, top: 960, w: 438 },
+  { n: "e2", left: 372, top: 790, w: 592 },
+  { n: "w", left: 806, top: 751, w: 634 },
 ];
 
 export default function HomeClient({ only }: { only?: string }) {
@@ -325,7 +325,7 @@ export default function HomeClient({ only }: { only?: string }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="pj-banana" src="/design/banana.png" alt="Sesisir pisang" />
           <div className="pj-blob-cream" aria-hidden="true" />
-          <h2 className="pj-hist-h">{txt(content, "history.heading", "Sejarah")}</h2>
+          <h2 className="pj-hist-h">Sejarah</h2>
           <p className="pj-hist-p">
             {txt(content, "history.text", "Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.")}
           </p>
@@ -417,7 +417,7 @@ export default function HomeClient({ only }: { only?: string }) {
               <circle cx="1210" cy="232" r="52" /><circle cx="1292" cy="226" r="44" /><circle cx="1262" cy="262" r="42" />
             </g>
           </svg>
-          <h2 className="pj-faq-h" style={{ whiteSpace: "pre-line" }}>{txt(content, "faq_section.heading", "You Asked\nWe Answered")}</h2>
+          <h2 className="pj-faq-h">You Asked<br />We Answered</h2>
           <div className="pj-qo" style={{ left: 0, top: 700, opacity: 0.85 }} aria-hidden="true">QUESTION</div>
           <div className="pj-qo" style={{ left: -130, top: 1095, opacity: 0.7 }} aria-hidden="true">QUESTION</div>
           <div className="pj-qo" style={{ left: -260, top: 1490, opacity: 0.55 }} aria-hidden="true">QUESTION</div>
@@ -447,7 +447,7 @@ export default function HomeClient({ only }: { only?: string }) {
           <img className="pj-cs pj-c-sql" src="/design/contact-sq-left.svg" alt="" aria-hidden="true" />
           <img className="pj-cs pj-c-sqr" src="/design/contact-sq-right.svg" alt="" aria-hidden="true" />
           {/* eslint-enable @next/next/no-img-element */}
-          <h2 className="pj-contact-h">{txt(content, "contact.eyebrow", "Contact")}</h2>
+          <h2 className="pj-contact-h">Contact</h2>
           <p className="pj-contact-sub">{txt(content, "contact.heading", "Mari ngobrol tentang rasa favoritmu")}</p>
           <p className="pj-contact-k">Email<br />WhatsApp CS</p>
           <p className="pj-contact-v">
