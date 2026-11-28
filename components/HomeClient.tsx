@@ -231,9 +231,9 @@ export default function HomeClient({ only }: { only?: string }) {
           <div className="pj-pill pj-pill-1" aria-hidden="true" />
           <div className="pj-pill pj-pill-2" aria-hidden="true" />
           <div className="pj-blob-dark" aria-hidden="true" />
-          <h2 className="pj-about-h">Tentang Platform</h2>
+          <h2 className="pj-about-h">About Us</h2>
           <p className="pj-about-p">
-            {txt(content, "about.description", "Pisang Ijo Kita adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.")}
+            {txt(content, "about.description", "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.")}
           </p>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img className="pj-coconut" src="/design/coconut.png" alt="Buah kelapa dibelah" />
@@ -339,11 +339,11 @@ export default function HomeClient({ only }: { only?: string }) {
           <div className="pj-qo" style={{ left: -390, top: 1885, opacity: 0.25 }} aria-hidden="true">QUESTION</div>
           <FaqAccordion faqs={faqs} />
           <svg className="pj-wave" width="1440" height="420" viewBox="0 2000 1440 420" preserveAspectRatio="none" aria-hidden="true">
-            {/* area di bawah gelombang sampai dasar section: krem (menutup hijau sage); berhenti di y=2250 supaya tidak menutupi kartu kontak */}
+            
             <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2262 L-30 2262 Z" fill="#E0DECF" />
-            {/* area di atas gelombang: hijau sage */}
+            
             <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111 L1470 2000 L-30 2000 Z" fill="#70826A" />
-            {/* pita hijau tua */}
+
             <path d="M-30 2137 C-25 2137 -17 2133 0 2137 C17 2140 41 2159 70 2157 C100 2155 145 2139 177 2127 C210 2116 235 2092 267 2089 C298 2087 331 2105 368 2113 C404 2121 443 2137 487 2139 C530 2142 590 2122 630 2127 C669 2132 695 2160 725 2170 C754 2180 782 2187 808 2187 C834 2187 856 2178 879 2170 C903 2162 927 2138 948 2137 C970 2136 976 2150 1010 2163 C1044 2176 1111 2209 1153 2213 C1195 2217 1228 2197 1260 2184 C1292 2171 1314 2147 1344 2134 C1373 2122 1419 2115 1440 2111 C1461 2107 1465 2111 1470 2111" fill="none" stroke="#17381B" strokeWidth="72" strokeLinecap="round" />
           </svg>
         </div>
@@ -366,7 +366,7 @@ export default function HomeClient({ only }: { only?: string }) {
           <p className="pj-contact-sub">{txt(content, "contact.heading", "Mari ngobrol tentang rasa favoritmu")}</p>
           <p className="pj-contact-k">Email<br />WhatsApp CS</p>
           <p className="pj-contact-v">
-            : {txt(content, "contact.email", "halo@pisangijokita.com")}
+            : {txt(content, "contact.email", "halo@pisangijo.com")}
             <br />
             : {txt(content, "contact.whatsapp", "+62 700 0000 0000")}
           </p>

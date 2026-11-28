@@ -117,12 +117,12 @@ html,body{overflow-x:clip;}
 .pj-pill-1{left:737px;top:101px;width:1191px;transform:rotate(-15.6deg);}
 .pj-pill-2{left:-491px;top:651px;width:1238px;transform:rotate(-16.1deg);}
 .pj-blob-dark{left:-31px;top:60px;width:721px;height:475px;background:url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 viewBox=%220 0 924 609%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath d=%22M437.304 517.005C518.1 549.544 593.51 569.061 652.481 548.825C769.328 533.242 850.35 476.136 900.839 383.639C951.433 271.443 915.056 174.312 811.65 88.7925C698.842 16.5715 581.208 18.0505 459.48 82.0665C422.57 96.9335 387.709 95.8405 357.026 62.2295C243.7 -26.2035 135.198 -16.0085 30.1683 65.1675C-49.1647 147.878 -68.5007 225.9 -0.199703 297.069C58.0043 334.778 99.4913 377.694 66.1543 443.908C63.9983 516.256 87.5833 576.635 190.506 600.119C257.718 621.044 309.705 601.036 353.455 558.885C378.902 535.641 405.998 518.513 437.304 517.005Z%22 fill=%22%2317381B%22/%3E %3C/svg%3E") 0 0/100% 100% no-repeat;}
-.pj-stage .pj-about-h{left:78px;top:130px;font-size:58px;line-height:70px;color:#FFFAEB;}
+.pj-stage .pj-about-h{left:78px;top:150px;font-size:58px;line-height:70px;color:#FFFAEB;}
 .pj-about-p{left:90px;top:226px;width:540px;max-height:196px;overflow:hidden;font-size:19.5px;line-height:28px;color:#FFFAEB;}
 .pj-coconut{left:725px;top:224px;width:378px;height:278px;filter:drop-shadow(6px 9px 8px rgba(0,0,0,.35));}
 .pj-banana{left:316px;top:480px;width:409px;height:324px;filter:drop-shadow(6px 9px 8px rgba(0,0,0,.35));}
 .pj-blob-cream{left:751px;top:459px;width:700px;height:536px;background:url("data:image/svg+xml,%3Csvg preserveAspectRatio=%22none%22 viewBox=%220 0 918 703%22 fill=%22none%22 xmlns=%22http://www.w3.org/2000/svg%22%3E %3Cpath d=%22M750.791 228.343C731.539 198.445 723.893 144.872 710.924 97.2997C691.386 57.8947 665.271 30.2347 631.188 16.8077C548.834 -28.8203 476.66 26.3737 405.101 87.6607C378.197 108.22 346.949 118.568 312.076 120.386C167.182 142.5 59.6789 188.996 23.9909 282.318C-7.39809 368.478 -9.26909 440.37 26.0109 494.309C81.1259 605.192 169.15 665.158 284.998 682.077C328.695 687.693 367.364 684.055 399.129 667.71C450.038 655.027 493.025 648.147 519.669 653.238C563.317 666.1 607.634 681.426 650.282 690.481C729.07 712.797 791.891 704.086 839.455 665.721C922.647 614.899 939.668 550.7 939.971 483.123C927.806 397.769 884.062 337.877 825.782 289.707C792.151 257.828 768.908 253.86 750.791 228.343Z%22 fill=%22%23FFFAEB%22/%3E %3C/svg%3E") 0 0/100% 100% no-repeat;}
-.pj-stage .pj-hist-h{right:148px;top:575px;font-size:70px;line-height:84px;text-align:right;color:#17381B;}
+.pj-stage .pj-hist-h{right:148px;top:600px;font-size:70px;line-height:84px;text-align:right;color:#17381B;}
 .pj-hist-p{left:905px;top:690px;width:470px;max-height:196px;overflow:hidden;font-size:19px;line-height:28px;text-align:right;color:#17381B;}
 
 /* ---------- Review ---------- */
@@ -194,7 +194,7 @@ html,body{overflow-x:clip;}
 .pj-c-foot{left:0;top:669px;width:1440px;}
 .pj-c-sql{left:0;top:378px;width:185px;}
 .pj-c-sqr{left:1326px;top:402px;width:114px;}
-.pj-stage .pj-contact-h{left:0;width:1478px;top:175px;font-family:var(--pj-brand);font-size:74px;line-height:90px;text-align:center;color:#17381B;text-shadow:2px 3px 3px rgba(0,0,0,.2);}
+.pj-stage .pj-contact-h{left:0;width:1478px;top:150px;font-family:var(--pj-brand);font-size:74px;line-height:90px;text-align:center;color:#17381B;text-shadow:2px 3px 3px rgba(0,0,0,.2);}
 .pj-contact-sub{left:0;width:1478px;top:246px;font-size:36px;line-height:52px;text-align:center;}
 .pj-contact-k,.pj-contact-v{top:350px;font-size:36px;line-height:46px;}
 .pj-contact-k{left:394px;}.pj-contact-v{left:659px;}
@@ -354,3 +354,40 @@ html{scroll-behavior:smooth;}
 .pj-sec{scroll-margin-top:calc(130px*var(--z));}
 
 .pj-faq{box-shadow:0 3px 0 #E0DECF;}
+
+
+/* animasi tombol Logout / Login */
+.pj-login{transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;}
+.pj-login:hover{transform:translateY(-3px) scale(1.05);background:#2F4321;color:#FFFAEB;border-color:#2F4321;box-shadow:0 8px 16px rgba(23,56,27,.35);}
+.pj-login:active{transform:translateY(0) scale(.97);box-shadow:0 3px 6px rgba(23,56,27,.3);}
+
+/* animasi field filter Cari Toko */
+.pj-filter input,.pj-filter select{transition:background-color .2s ease, box-shadow .2s ease, transform .2s ease;}
+.pj-filter input:hover,.pj-filter select:hover{background:#FFFFFF;transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,.25);}
+.pj-filter input:focus,.pj-filter select:focus{background:#FFFFFF;outline:none;box-shadow:0 0 0 3px #B8A39B;}
+.pj-fbtn{transition:transform .18s ease, background-color .18s ease;}
+.pj-fbtn:hover{transform:scale(1.06);background:#5B664E;}
+.pj-fbtn:active{transform:scale(.97);}
+
+/* animasi menu navbar */
+.pj-nav a{position:relative;display:inline-block;transition:transform .18s ease;}
+.pj-nav a::after{content:"";position:absolute;left:0;right:0;bottom:2px;height:3px;border-radius:2px;background:#17381B;transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+.pj-nav a:hover{transform:translateY(-2px);}
+.pj-nav a:hover::after{transform:scaleX(1);}
+.pj-nav a:active{transform:translateY(0) scale(.97);}
+
+/* animasi zoom di Hero */
+.pj-hero-search,.pj-hero-search button,.pj-hero-btn{transition:transform .2s ease, box-shadow .2s ease;}
+.pj-hero-search:hover{transform:scale(1.03);box-shadow:6px 12px 16px rgba(0,0,0,.35);}
+.pj-hero-search:focus-within{transform:scale(1.03);box-shadow:6px 12px 16px rgba(0,0,0,.35);}
+.pj-hero-search button:hover{transform:scale(1.08);}
+.pj-hero-search button:active{transform:scale(.96);}
+.pj-hero-btn:hover{transform:scale(1.08);box-shadow:6px 10px 14px rgba(0,0,0,.3);}
+.pj-hero-btn:active{transform:scale(.96);}
+
+/* animasi "Lihat semua toko" */
+.pj-toko-link{transition:transform .2s ease, text-shadow .2s ease;transform-origin:right center;}
+.pj-toko-link::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;border-radius:2px;background:#FFFAEB;transform:scaleX(0);transform-origin:left;transition:transform .22s ease;}
+.pj-toko-link:hover{transform:scale(1.15);text-shadow:0 2px 8px rgba(0,0,0,.35);}
+.pj-toko-link:hover::after{transform:scaleX(1);}
+.pj-toko-link:active{transform:scale(.97);}

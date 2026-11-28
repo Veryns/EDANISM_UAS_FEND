@@ -24,7 +24,7 @@ const blocks: Record<string, unknown> = {
     eyebrow: "Tentang Platform",
     heading: "Merayakan segarnya rasa yang akrab",
     description:
-      "Pisang Ijo Kita adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.",
+      "Pisang Ijo adalah platform yang menghubungkan para pecinta kuliner tradisional Makassar dengan mitra UMKM dan kedai lokal terbaik di seluruh Jabodetabek. Kami berkomitmen untuk melestarikan cita rasa nusantara melalui kemudahan pemesanan online, jaminan kebersihan, serta standar kualitas bahan baku kelapa dan pisang pilihan yang selalu segar setiap hari.",
     media_text: "Ceritanya Gambar Bahan Bahan Pisang Ijo",
     images: [],
     image_url: "",
@@ -37,7 +37,7 @@ const blocks: Record<string, unknown> = {
     text: "Berawal dari kecintaan mendalam terhadap kuliner tradisional, Pisang Ijo Kita hadir untuk menyajikan kelezatan Es Pisang Ijo otentik khas Makassar langsung ke hadapan Anda. Sejak pertama kali berdiri, kami konsisten menjaga kualitas rasa melalui pemilihan pisang pilihan yang matang pas, adonan lembut berbalut daun suji alami, dipadu dengan gurihnya vla santan dan es yang menyegarkan. Kini, kami terus berkembang dan memperluas jangkauan melalui kemitraan di berbagai titik strategis agar dapat melayani pelanggan setia dengan lebih dekat dan cepat.",
   },
   testimonial_section: {
-    eyebrow: "Kota Mereka #MerekaBicara",
+    eyebrow: "Kata Mereka #MerekaBicara",
     heading: "Testimoni Pelanggan",
     cta: "Tulis Ulasan",
   },
@@ -53,7 +53,7 @@ const blocks: Record<string, unknown> = {
   contact: {
     eyebrow: "Kontak",
     heading: "Mari ngobrol tentang rasa favoritmu",
-    email: "halo@pisangijokita.com",
+    email: "halo@pisangijo.com",
     whatsapp: "+62 700 0000 0000",
     note: "Butuh bantuan menggunakan halaman demo ini? Hubungi kanal contoh berikut pada jam layanan umum.",
     hours: "Senin - Sabtu, 09.00 - 18.00",
